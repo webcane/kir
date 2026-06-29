@@ -4,7 +4,7 @@ Project-management instructions for how `.planning/` documents evolve. This is a
 
 ## PROJECT.md Evolution
 
-**After each phase transition** (via `/gsd-transition`):
+**After each phase transition** (via `/gsd-ship`):
 1. "Product Definition" still accurate? → Update if drifted
 2. Decisions to log? → Add to Architectural Decisions
 3. Milestone boundary crossed? → Update ## Milestones (mark current, advance "(current)" marker)
