@@ -71,6 +71,12 @@ None yet.
 - [Phase 3]: Alias resolution / concept merge is flagged by research as the single highest-risk pass in the pipeline (documented GraphRAG production bug for silent over/under-merging) — plan for dedicated adversarial fixtures, not just happy-path tests.
 - [Phase 2]: PydanticAI v2.0.0 API surface was six days old at research time — verify exact `output_type`/`ModelRetry`/`output_retries` usage against current docs before implementing the LLM adapter, not from memory of research.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260629-jxm | fix todo - Rewrite CLAUDE.md per architectural-invariants structure | 2026-06-29 | fa819d6 | [260629-jxm-fix-todo-rewrite-claude-md-per-architect](./quick/260629-jxm-fix-todo-rewrite-claude-md-per-architect/) |
+
 ## Deferred Items
 
 Items acknowledged and carried forward from previous milestone close:
@@ -84,3 +90,4 @@ Items acknowledged and carried forward from previous milestone close:
 Last session: 2026-06-29
 Stopped at: ROADMAP.md revised (Workstreams section added; Phase 1/2/4 descriptions enriched); REQUIREMENTS.md traceability finalized (42/42 mapped); ready for /gsd-plan-phase 1
 Resume file: None
+Last activity: 2026-06-29 - Completed quick task 260629-jxm: fix todo - Rewrite CLAUDE.md per architectural-invariants structure
