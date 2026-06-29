@@ -194,8 +194,15 @@ def register_pass(name: str, depends_on: tuple[str, ...] = ()):
 # passes/knowledge/extract_concepts.py
 @register_pass("extract_concepts", depends_on=("parse", "section", "metadata"))
 def extract_concepts_pass(ir: DocumentIR, ctx: CompilerContext) -> DocumentIR:
-    concepts = ctx.llm.extract_concepts(ir.sections, prompt_version=ctx.prompt_version)
-    return ir.model_copy(update={"concepts": concepts})
+    concepts, diagnostics = ctx.llm.extract_concepts(
+        ir.sections, prompt_version=ctx.prompt_version
+    )
+    # CORE-06: every pass returns structured diagnostics alongside its IR delta —
+    # never just the happy-path output. Diagnostics accumulate; they are never dropped.
+    return ir.model_copy(update={
+        "concepts": concepts,
+        "diagnostics": ir.diagnostics + diagnostics,
+    })
 ```
 
 ### Pattern 2: Ports as Protocols Owned by the Domain (Dependency Inversion)
@@ -299,7 +306,7 @@ Final Knowledge IR  →  persisted via KnowledgeRepositoryPort
 
 ### Scaling Priorities
 
-1. **First bottleneck (well before 700 docs becomes a problem):** LLM API latency/cost during `ExtractConceptsPass`/`ResolveAliasesPass`/`BuildRelationsPass`/`BuildTaxonomyPass` — these are the only passes that leave the process. Mitigate with per-document-checksum incremental compilation (already a v1 requirement) so re-runs don't re-call the LLM for unchanged documents, and consider caching LLM responses keyed on (document checksum, prompt version) independent of the Document IR cache.
+1. **First bottleneck (well before 700 docs becomes a problem):** LLM API latency/cost during `ExtractConceptsPass`/`ResolveAliasesPass`/`BuildRelationsPass`/`BuildTaxonomyPass` — these are the only passes that leave the process. Mitigate with per-document-checksum incremental compilation (already a v1 requirement) so re-runs don't re-call the LLM for unchanged documents. The `llm/cache.py` response cache (keyed on document checksum, prompt version, schema version, and pinned model id — LLM-02) is a *required* Phase 2 mechanism, not an optional scaling optimization deferred to later corpus sizes — it must exist from the first LLM-backed pass onward so that re-runs are cheap and reproducible by construction, independent of the Document IR cache.
 2. **Second bottleneck:** Sequential file I/O across hundreds of small YAML files in the repository adapter — solvable with straightforward batching (write all changed files in one pass) long before it requires anything architecturally interesting.
 
 ## Anti-Patterns
@@ -357,7 +364,7 @@ Dependencies flow inside-out and bottom-up: you cannot test a pass without the d
 4. **Deterministic passes first** (`passes/document/parse.py`, `section.py`, `metadata.py`; `passes/knowledge/merge_concepts.py`, `conflict.py`) — These need no LLM port, no real I/O — pure functions over domain models, fastest to get right and fully unit-testable with plain fixtures.
 5. **Fake/mock LLM adapter for testing** (a `FakeLLMAdapter` implementing `LLMPort` with canned responses, or PydanticAI's own `TestModel`/`FunctionModel`) — Build this *before* the real LLM adapter so that LLM-backed passes (step 6) can be developed and tested without live API calls or cost from day one.
 6. **LLM-backed passes** (`passes/document/extract_concepts... ` — note: ExtractConcepts is listed under Document Compiler's pass list in PROJECT.md since it runs per-document; `passes/knowledge/resolve_aliases.py`, `build_relations.py`, `build_taxonomy.py`) — Each written against `LLMPort`, tested against the fake/mock adapter from step 5 with recorded/golden fixtures.
-7. **Real LLM adapter** (`adapters/llm/pydantic_ai_adapter.py` + versioned prompts) — Implement `LLMPort` for real using `pydantic_ai.Agent`. Can be developed in parallel with steps 4-6 since it only needs the `LLMPort` contract from step 2, not the passes themselves.
+7. **Real LLM adapter + response cache** (`adapters/llm/pydantic_ai_adapter.py` + versioned prompts + `llm/cache.py`) — Implement `LLMPort` for real using `pydantic_ai.Agent`, and build the response cache (keyed on document checksum, prompt version, schema version, model id — LLM-02) alongside it from the start, not as a later optimization pass. Can be developed in parallel with steps 4-6 since it only needs the `LLMPort` contract from step 2, not the passes themselves.
 8. **Repository adapter** (`adapters/repository/yaml_*.py`) — Implement `RepositoryPort` against the one-YAML-file-per-artifact layout. Depends only on domain models (step 1) and the port interface (step 2); can also be developed in parallel with steps 4-7.
 9. **Markdown parser adapter** (`adapters/parsing/markdown_it_adapter.py`) — Implement `MarkdownParserPort`. Needed concretely by step 4's `ParsePass` consumer at the use-case level, but the *pass itself* only needs the port, so this can trail slightly behind without blocking pass development.
 10. **Use-case services** (`application/document_compiler.py`, `knowledge_compiler.py`) — Wire `PassRegistry.pipeline()` execution against real or fake ports; this is where the two pipelines actually run end-to-end for the first time. Depends on steps 3-9 all being in place (at least with fakes for ports not yet implemented).
