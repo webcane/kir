@@ -67,7 +67,7 @@ KIR is best understood as three concentric rings (hexagonal) crossed with a line
 
 ## Recommended Project Structure
 
-**Restructured per exploration decision (2026-06-29):** the ring-based layout below (`domain/` → `passes/` → `application/` → `adapters/` → `cli/`) is replaced by 5 independent packages within one repo, with import boundaries enforced *between packages*, not just between conceptual layers. See `.planning/notes/five-package-split-with-core-first.md` for the full decision record.
+**Restructured per exploration decision (2026-06-29):** the ring-based layout below (`domain/` → `passes/` → `application/` → `adapters/` → `cli/`) is replaced by 5 independent packages within one repo (`core`, `compiler/documents`, `compiler/knowledge`, `llm`, `tooling` — the two compiler packages nest under a shared `compiler/` parent for discoverability but remain independent import-wise), with import boundaries enforced *between packages*, not just between conceptual layers. See `.planning/notes/five-package-split-with-core-first.md` for the full decision record.
 
 ```
 src/kir/
@@ -93,49 +93,50 @@ src/kir/
 │   └── config/
 │       └── versions.py                # compiler_version, schema_version, prompt_version constants
 │
-├── document_compiler/                 # Package 2 — imports core only
-│   ├── passes/
-│   │   ├── parse.py                   # ParsePass (deterministic)
-│   │   ├── section.py                 # SectionPass (deterministic)
-│   │   ├── metadata.py                # MetadataPass (deterministic)
-│   │   └── extract_concepts.py        # ExtractConceptsPass (LLM-backed, uses core.ports.LLMPort)
-│   ├── adapters/
-│   │   └── markdown_it_adapter.py     # Implements core.ports.MarkdownParserPort
-│   └── compiler.py                    # DocumentCompiler use-case service: runs the pipeline per source file
+├── compiler/                          # Package 2 — imports core only; houses both compiler pipelines
+│   ├── documents/                     # (was document_compiler/)
+│   │   ├── passes/
+│   │   │   ├── parse.py               # ParsePass (deterministic)
+│   │   │   ├── section.py             # SectionPass (deterministic)
+│   │   │   ├── metadata.py            # MetadataPass (deterministic)
+│   │   │   └── extract_concepts.py    # ExtractConceptsPass (LLM-backed, uses core.ports.LLMPort)
+│   │   ├── adapters/
+│   │   │   └── markdown_it_adapter.py # Implements core.ports.MarkdownParserPort
+│   │   └── compiler.py                # DocumentCompiler use-case service: runs the pipeline per source file
+│   │
+│   └── knowledge/                     # (was knowledge_compiler/)
+│       ├── passes/
+│       │   ├── resolve_aliases.py     # ResolveAliasesPass (LLM-backed)
+│       │   ├── merge_concepts.py      # MergeConceptsPass (deterministic merge logic)
+│       │   ├── build_relations.py     # BuildRelationsPass (LLM-backed)
+│       │   ├── build_taxonomy.py      # BuildTaxonomyPass (LLM-backed)
+│       │   └── conflict.py            # ConflictPass (deterministic, detects + records)
+│       └── compiler.py                # KnowledgeCompiler use-case service: runs the pipeline across all Document IRs
 │
-├── knowledge_compiler/                # Package 3 — imports core only
-│   ├── passes/
-│   │   ├── resolve_aliases.py         # ResolveAliasesPass (LLM-backed)
-│   │   ├── merge_concepts.py          # MergeConceptsPass (deterministic merge logic)
-│   │   ├── build_relations.py         # BuildRelationsPass (LLM-backed)
-│   │   ├── build_taxonomy.py          # BuildTaxonomyPass (LLM-backed)
-│   │   └── conflict.py                # ConflictPass (deterministic, detects + records)
-│   └── compiler.py                    # KnowledgeCompiler use-case service: runs the pipeline across all Document IRs
-│
-├── llm_infrastructure/                # Package 4 — imports core only
+├── llm/                                # Package 3 — imports core only (was llm_infrastructure/)
 │   ├── pydantic_ai_adapter.py         # Implements core.ports.LLMPort via pydantic_ai.Agent
 │   ├── prompts/                       # Versioned prompt templates (pinned per determinism requirement)
 │   └── cache.py                       # LLM response cache keyed on (checksum, prompt_version, schema_version, model_id) — LLM-02
 │
-└── tooling/                           # Package 5 — composition root; the only package permitted to import all four others
+└── tooling/                            # Package 4 — composition root; the only package permitted to import all others
     ├── repository/
     │   ├── yaml_document_repo.py      # Implements core.ports.DocumentRepositoryPort (documents/*.yaml)
     │   └── yaml_knowledge_repo.py     # Implements core.ports.KnowledgeRepositoryPort (concepts/, relations/, taxonomy/, aliases/, metadata/)
     └── cli/
-        └── main.py                    # Typer app — wires document_compiler + knowledge_compiler + llm_infrastructure + repository adapters
+        └── main.py                    # Typer app — wires compiler.documents + compiler.knowledge + llm + repository adapters
 ```
 
 ### Structure Rationale
 
-- **Package boundaries are enforced import boundaries, not just conceptual layers.** `document_compiler/`, `knowledge_compiler/`, and `llm_infrastructure/` may import only from `core/` — never from each other. This is the mechanism that makes the four non-core packages genuinely independent and parallelizable, not just organizationally separate (enforceable with a tool like `import-linter`).
-- **`core/` ships first and is contract-frozen before the other four proceed.** Domain models and ports cannot be developed in parallel with the packages that consume them — every other package depends on `core/`'s domain models and port `Protocol`s existing first (see Suggested Build Order steps 1-3, unchanged by this restructure).
+- **Package boundaries are enforced import boundaries, not just conceptual layers.** `compiler/documents/`, `compiler/knowledge/`, and `llm/` may import only from `core/` — never from each other (`compiler/documents/` and `compiler/knowledge/` sit under the same `compiler/` parent for discoverability, but the import rule still treats them as two independent packages, not a shared namespace). This is the mechanism that makes the non-core packages genuinely independent and parallelizable, not just organizationally separate (enforceable with a tool like `import-linter`).
+- **`core/` ships first and is contract-frozen before the other packages proceed.** Domain models and ports cannot be developed in parallel with the packages that consume them — every other package depends on `core/`'s domain models and port `Protocol`s existing first (see Suggested Build Order steps 1-3, unchanged by this restructure).
 - **`core/` has no subfolder for "services"** — tactical DDD here stays deliberately thin (per PROJECT.md's explicit rejection of Event Sourcing / enterprise DDD). Concept/Relation/Taxonomy/Document/Diagnostic are the only Entities/VOs/Aggregates; no domain services layer is needed because pass logic that needs orchestration lives in each compiler package, not inside the domain models.
 - **`core/ports/` lives inside the core package, not inside the packages that implement them** — this is the crux of "ports are owned by the inside." Core defines *what shape of behavior it needs*; the other packages are graded against that shape. This is what makes "new LLM provider" or "new storage backend" a zero-core-change event.
-- **`document_compiler/` vs `knowledge_compiler/`** mirrors the two-compiler structure already named in PROJECT.md — each is a distinct pipeline/package with its own pass registry instance, not one monolithic 9-stage pipeline. This also matches the natural incremental-compilation boundary: Document IR passes run per-file (parallelizable, cacheable by checksum); Knowledge IR passes run once over the merged set.
-- **`llm_infrastructure/` is its own package**, not a subfolder of `document_compiler/`'s adapters — it has standalone correctness concerns (prompt versioning, cache-key construction, provider substitutability) that justify treating it as a fifth independent unit of work, matching PROJECT.md's Workstream E.
-- **`markdown_it_adapter.py` lives inside `document_compiler/`**, not in a shared adapters location — it has exactly one consumer package, unlike the LLM and Repository adapters, which are cross-cutting infrastructure used by the composition root.
-- **`tooling/` is the only package permitted to import all four others** — it is the composition root (CLI wires concrete adapters from every package together), consistent with the CLI's role in the original ring-based layout.
-- **`core/domain/models/diagnostic.py` and `llm_infrastructure/cache.py` are new additions** that close the gap where structured diagnostics (CORE-06) and the LLM response cache (LLM-02) were previously only mentioned in passing under "Scaling Considerations" rather than built into the required structure.
+- **`compiler/documents/` vs `compiler/knowledge/`** mirrors the two-compiler structure already named in PROJECT.md — each is a distinct pipeline/package with its own pass registry instance, not one monolithic 9-stage pipeline. This also matches the natural incremental-compilation boundary: Document IR passes run per-file (parallelizable, cacheable by checksum); Knowledge IR passes run once over the merged set.
+- **`llm/` is its own package**, not a subfolder of `compiler/documents/`'s adapters — it has standalone correctness concerns (prompt versioning, cache-key construction, provider substitutability) that justify treating it as an independent unit of work, matching PROJECT.md's Workstream E.
+- **`markdown_it_adapter.py` lives inside `compiler/documents/`**, not in a shared adapters location — it has exactly one consumer package, unlike the LLM and Repository adapters, which are cross-cutting infrastructure used by the composition root.
+- **`tooling/` is the only package permitted to import all others** — it is the composition root (CLI wires concrete adapters from every package together), consistent with the CLI's role in the original ring-based layout.
+- **`core/domain/models/diagnostic.py` and `llm/cache.py` are new additions** that close the gap where structured diagnostics (CORE-06) and the LLM response cache (LLM-02) were previously only mentioned in passing under "Scaling Considerations" rather than built into the required structure.
 
 ## Architectural Patterns
 
