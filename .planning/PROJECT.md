@@ -73,7 +73,9 @@ Given identical raw sources, compiler version, prompt version, and schema versio
 | Tactical DDD only (Entities/Value Objects/Aggregates, no Event Sourcing) | Enough structure to model Concept/Relation/Taxonomy cleanly without enterprise overhead | — Pending |
 | Compiler-pass pipeline as the core extension mechanism | New passes register independently; matches the LLVM-for-knowledge mental model | — Pending |
 | PydanticAI for LLM-backed passes | Agents return validated Pydantic models directly — no manual parsing/validation glue | — Pending |
-| Concept IDs = slug of canonical name | Human-readable IDs; stability across renames handled via explicit alias/merge tracking rather than opaque UUIDs | — Pending |
+| Concept identity is a defined rule, not a frozen algorithm (candidate: name-slug, revisited during planning) | Slug-of-name alone breaks on renames (e.g. "OAuth" → "OAuth 2.1"); the requirement is stable, rule-defined identity, leaving the exact mechanism an implementation decision made during planning | — Pending |
+| Relation vocabulary is core-and-extensible, not closed | A hardcoded closed vocabulary would force requirement rewrites every time a real new relation type (e.g. authenticates_with, deprecated_by) is needed; core vocabulary + documented extension policy avoids that churn | — Pending |
+| LLM passes depend only on a domain-owned LLMPort, never directly on PydanticAI or any SDK | Keeps the concrete LLM library an interchangeable adapter detail, consistent with the hexagonal-architecture decision below — a stack change shouldn't ripple into pass logic | — Pending |
 | Raw sources and kir/ output kept in separate directories, raw never mutated | Preserves provenance integrity and keeps the compiler side-effect-free on inputs | — Pending |
 | Incremental compilation via per-document checksum diffing | Simplest correct mechanism for hundreds-of-documents scale; avoids full-corpus recompilation cost | — Pending |
 | LLM passes tested via recorded/mocked responses, not live API calls | Fast, repeatable, free CI; determinism requirement makes live-API tests unreliable anyway | — Pending |
