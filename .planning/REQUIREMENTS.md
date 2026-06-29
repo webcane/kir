@@ -3,7 +3,9 @@
 **Defined:** 2026-06-29
 **Core Value:** Given identical raw sources, compiler version, prompt version, and schema version, KIR must deterministically compile raw Markdown into a canonical Knowledge IR that merges concepts/relations/taxonomy across documents, preserves full provenance, and explicitly records (never silently resolves) semantic conflicts.
 
-## v1 Requirements
+## M1 — Current Roadmap Scope (Phases 1-2)
+
+Requirements actively being planned/executed. Maps to phases in `.planning/ROADMAP.md`.
 
 ### Compiler Foundation
 
@@ -12,7 +14,7 @@
 - [ ] **CORE-03**: Compiler passes register independently (decorator/plugin-based registry) such that adding a new pass never requires modifying existing passes
 - [ ] **CORE-04**: Compiler executes a deterministic pipeline of CompilerPass instances; each pass declares what it consumes, what it produces, and its dependencies, and the pipeline resolves execution order automatically from those declarations rather than a hardcoded sequence
 - [ ] **CORE-05**: All compiler passes execute inside a shared, immutable CompilerContext (carrying config, cache, repository, LLM port, logger, metrics, versions) rather than receiving these piecemeal
-- [ ] **CORE-06**: Every pass returns structured diagnostics (errors, warnings, infos) as part of its output artifact, instead of printing or logging output directly
+- [ ] **CORE-06**: Every pass returns structured diagnostics (each with code, severity, source location, and optional suggestion — Rust-compiler-style) as part of its output artifact, instead of printing or logging output directly
 - [ ] **CORE-07**: Passes never mutate a previous IR in place; each pass produces a new immutable artifact
 
 ### Compiler Passes (architectural contract)
@@ -34,6 +36,19 @@
 - [ ] **LLM-01**: LLM-backed passes depend only on LLMPort (the domain-owned port), never directly on a specific LLM SDK or library — the concrete provider integration (e.g. a PydanticAI-based adapter) is an interchangeable implementation detail
 - [ ] **LLM-02**: LLM responses are cached/recorded keyed on (document checksum, prompt version, schema version, pinned model id) so reruns against unchanged inputs reproduce identical output without re-calling the LLM
 - [ ] **LLM-03**: LLM-backed passes are unit-tested against recorded responses (golden fixtures), never against a live API call in CI
+
+### Extensibility
+
+- [ ] **EXT-01**: New CompilerPass implementations can be discovered and registered without modifying the core pipeline (plugin-style registration), so third-party/future passes are addable the same way built-in passes are
+
+### Storage
+
+- [ ] **STOR-01**: Each artifact (document, concept, relation, taxonomy node, alias, conflict, metadata) is stored as an individual YAML file — no monolithic JSON
+- [ ] **STOR-02**: Generated kir/ output is written to a directory separate from raw sources; raw source files are never modified by the compiler
+
+## M2 — Future Milestone Scope, Already Defined (Knowledge Compiler + Validation)
+
+Already-decided v1 scope — not deferred, not speculative — but not yet broken into detailed phases in ROADMAP.md. Will become Phase 3 (Knowledge Compiler) and Phase 4 (Validation) when M1 completes and the roadmap is rewritten for M2. See PROJECT.md ## Milestones.
 
 ### Knowledge Compiler — Concept Merge
 
@@ -58,22 +73,29 @@
 - [ ] **CONF-02**: Conflict detection runs after concept merge, relation building, and taxonomy building (conflicts are properties of the merged graph, not of any single document)
 - [ ] **CONF-03**: Detected conflicts are written as first-class YAML conflict records — never silently auto-resolved
 
-### Incremental Compilation
-
-- [ ] **INCR-01**: System computes a checksum per source document and recompiles only Document IR for documents whose checksum changed
-- [ ] **INCR-02**: When a document's Document IR changes, the system re-merges only the Knowledge IR affected by that document's concepts (not the full corpus), using a reverse concept→document index to determine the affected scope
-
-### Versioning & Storage
+### Versioning
 
 - [ ] **VER-01**: Every generated artifact records compiler version, schema version, and prompt version
 - [ ] **VER-02**: Knowledge IR readers reject (rather than silently accept or guess-coerce) artifacts whose schema version is incompatible with the reader
 - [ ] **VER-03**: Each artifact records, in addition to compiler/schema/prompt version, the version of every pass that contributed to it (a "pass manifest"), so a future schema or pass change can be distinguished from a stale artifact
-- [ ] **STOR-01**: Each artifact (document, concept, relation, taxonomy node, alias, conflict, metadata) is stored as an individual YAML file — no monolithic JSON
-- [ ] **STOR-02**: Generated kir/ output is written to a directory separate from raw sources; raw source files are never modified by the compiler
 
-### Extensibility
+### Testing Infrastructure
 
-- [ ] **EXT-01**: New CompilerPass implementations can be discovered and registered without modifying the core pipeline (plugin-style registration), so third-party/future passes are addable the same way built-in passes are
+- [ ] **TEST-01**: Pipeline output is verifiable via golden-file comparison (compiled Knowledge IR vs. a committed expected YAML snapshot), not only field-by-field assertions, so any unintended output drift is caught automatically
+- [ ] **TEST-02**: Test fixtures are organized in three tiers by corpus size — tiny (~5 docs, runs on every CI commit), medium (~50 docs, regression coverage), real (the 700-doc Slab export, on-demand acceptance) — so test cost scales with how often each tier needs to run
+
+### Acceptance
+
+- [ ] **ACC-01**: `kir compile` succeeds end-to-end on the tiny and medium reference corpora as part of CI, with conflicts and provenance correctly recorded and verified against golden-file snapshots — this is the fast, repeatable correctness gate
+
+## M3 — Future Milestone Scope, Already Defined (Incremental Compilation + CLI)
+
+Already-decided v1 scope — not deferred, not speculative — but not yet broken into detailed phases in ROADMAP.md. Will become Phase 5 (Incremental Compilation) and Phase 6 (CLI & Real-Corpus Acceptance) when M2 completes. See PROJECT.md ## Milestones.
+
+### Incremental Compilation
+
+- [ ] **INCR-01**: System computes a checksum per source document and recompiles only Document IR for documents whose checksum changed
+- [ ] **INCR-02**: When a document's Document IR changes, the system re-merges only the Knowledge IR affected by that document's concepts (not the full corpus), using a reverse concept→document index to determine the affected scope
 
 ### CLI
 
@@ -81,7 +103,6 @@
 
 ### Acceptance
 
-- [ ] **ACC-01**: `kir compile` succeeds end-to-end on a small reference corpus (~20 representative documents) as part of CI, with conflicts and provenance correctly recorded — this is the fast, repeatable correctness gate
 - [ ] **ACC-02**: `kir compile` succeeds end-to-end on the user's real 700-document Slab Markdown export, producing Knowledge IR with conflicts and provenance correctly recorded — this is the real-world scale validation, run on demand rather than every CI run
 
 ## v2 Requirements
@@ -121,54 +142,60 @@
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| CORE-01 | TBD (roadmap) | Pending |
-| CORE-02 | TBD (roadmap) | Pending |
-| CORE-03 | TBD (roadmap) | Pending |
-| CORE-04 | TBD (roadmap) | Pending |
-| CORE-05 | TBD (roadmap) | Pending |
-| CORE-06 | TBD (roadmap) | Pending |
-| CORE-07 | TBD (roadmap) | Pending |
-| PASS-01 | TBD (roadmap) | Pending |
-| PASS-02 | TBD (roadmap) | Pending |
-| PASS-03 | TBD (roadmap) | Pending |
-| PASS-04 | TBD (roadmap) | Pending |
-| PASS-05 | TBD (roadmap) | Pending |
-| DOC-01 | TBD (roadmap) | Pending |
-| DOC-02 | TBD (roadmap) | Pending |
-| DOC-03 | TBD (roadmap) | Pending |
-| LLM-01 | TBD (roadmap) | Pending |
-| LLM-02 | TBD (roadmap) | Pending |
-| LLM-03 | TBD (roadmap) | Pending |
-| KNOW-01 | TBD (roadmap) | Pending |
-| KNOW-02 | TBD (roadmap) | Pending |
-| KNOW-03 | TBD (roadmap) | Pending |
-| KNOW-04 | TBD (roadmap) | Pending |
-| REL-01 | TBD (roadmap) | Pending |
-| REL-02 | TBD (roadmap) | Pending |
-| TAX-01 | TBD (roadmap) | Pending |
-| PROV-01 | TBD (roadmap) | Pending |
-| CONF-01 | TBD (roadmap) | Pending |
-| CONF-02 | TBD (roadmap) | Pending |
-| CONF-03 | TBD (roadmap) | Pending |
-| INCR-01 | TBD (roadmap) | Pending |
-| INCR-02 | TBD (roadmap) | Pending |
-| VER-01 | TBD (roadmap) | Pending |
-| VER-02 | TBD (roadmap) | Pending |
-| VER-03 | TBD (roadmap) | Pending |
-| STOR-01 | TBD (roadmap) | Pending |
-| STOR-02 | TBD (roadmap) | Pending |
-| EXT-01 | TBD (roadmap) | Pending |
-| CLI-01 | TBD (roadmap) | Pending |
-| ACC-01 | TBD (roadmap) | Pending |
-| ACC-02 | TBD (roadmap) | Pending |
+| Requirement | Milestone | Phase | Status |
+|-------------|-----------|-------|--------|
+| CORE-01 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| CORE-02 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| CORE-03 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| CORE-04 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| CORE-05 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| CORE-06 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| CORE-07 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| PASS-01 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| PASS-02 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| PASS-03 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| PASS-04 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| PASS-05 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| EXT-01 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| STOR-01 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| STOR-02 | M1 | Phase 1 (in ROADMAP.md) | Pending |
+| DOC-01 | M1 | Phase 2 (in ROADMAP.md) | Pending |
+| DOC-02 | M1 | Phase 2 (in ROADMAP.md) | Pending |
+| DOC-03 | M1 | Phase 2 (in ROADMAP.md) | Pending |
+| LLM-01 | M1 | Phase 2 (in ROADMAP.md) | Pending |
+| LLM-02 | M1 | Phase 2 (in ROADMAP.md) | Pending |
+| LLM-03 | M1 | Phase 2 (in ROADMAP.md) | Pending |
+| KNOW-01 | M2 | Phase 3 (future) | Not yet planned |
+| KNOW-02 | M2 | Phase 3 (future) | Not yet planned |
+| KNOW-03 | M2 | Phase 3 (future) | Not yet planned |
+| KNOW-04 | M2 | Phase 3 (future) | Not yet planned |
+| REL-01 | M2 | Phase 3 (future) | Not yet planned |
+| REL-02 | M2 | Phase 3 (future) | Not yet planned |
+| TAX-01 | M2 | Phase 3 (future) | Not yet planned |
+| PROV-01 | M2 | Phase 3 (future) | Not yet planned |
+| CONF-01 | M2 | Phase 3 (future) | Not yet planned |
+| CONF-02 | M2 | Phase 3 (future) | Not yet planned |
+| CONF-03 | M2 | Phase 3 (future) | Not yet planned |
+| VER-01 | M2 | Phase 4 (future) | Not yet planned |
+| VER-02 | M2 | Phase 4 (future) | Not yet planned |
+| VER-03 | M2 | Phase 4 (future) | Not yet planned |
+| TEST-01 | M2 | Phase 4 (future) | Not yet planned |
+| TEST-02 | M2 | Phase 4 (future) | Not yet planned |
+| ACC-01 | M2 | Phase 4 (future) | Not yet planned |
+| INCR-01 | M3 | Phase 5 (future) | Not yet planned |
+| INCR-02 | M3 | Phase 5 (future) | Not yet planned |
+| CLI-01 | M3 | Phase 6 (future) | Not yet planned |
+| ACC-02 | M3 | Phase 6 (future) | Not yet planned |
 
 **Coverage:**
-- v1 requirements: 39 total
-- Mapped to phases: 0 (populated by roadmap creation)
-- Unmapped: 39 ⚠️ (expected — roadmap not yet created)
+- v1 requirements: 42 total, across 3 milestones (M1: 21, M2: 17, M3: 4)
+- Mapped to a milestone/phase: 42 ✓
+- Detailed-planned in current ROADMAP.md (M1 only): 21 (Phases 1-2)
+- Not yet detail-planned (M2/M3 — already scoped, awaiting their milestone): 21
+- Unmapped: 0
+
+**Note on milestone restructure (2026-06-29):** Per user feedback, ROADMAP.md was trimmed to only the current milestone (M1, Phases 1-2) rather than carrying all 6 phases up front — PROJECT.md now holds the persistent ## Milestones (M1/M2/M3) and ## Architecture & Workstreams views, while ROADMAP.md is rewritten per-milestone. This table reflects that split: "Pending" = actively planned in the current ROADMAP.md; "Not yet planned" = already-decided v1 scope, correctly deferred from detailed planning until its milestone becomes current (not a scope cut). The "39 total" miscount from initial requirements-definition was corrected to 40 during original roadmap creation, then grew to 42 with TEST-01/TEST-02 (golden-file testing, tiered fixture corpora).
 
 ---
 *Requirements defined: 2026-06-29*
-*Last updated: 2026-06-29 after incorporating user's architectural-contract feedback (compiler pipeline, CompilerContext, pass diagnostics/isolation, provider-agnostic LLM port, flexible identity/vocabulary, two-tier acceptance, IR compatibility, pass manifest, plugin extensibility)*
+*Last updated: 2026-06-29 — restructured into M1 (current roadmap scope) / M2 / M3 (future milestone scope, already defined) sections and traceability columns, mirroring the Milestones split now documented in PROJECT.md. No requirements were added, removed, or rescoped in this pass — only their presentation relative to "currently planned" vs. "future milestone" was reorganized.*

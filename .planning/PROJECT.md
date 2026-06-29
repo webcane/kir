@@ -8,6 +8,36 @@ KIR is a semantic compiler that transforms heterogeneous raw sources (starting w
 
 Given identical raw sources, compiler version, prompt version, and schema version, KIR must deterministically compile raw Markdown into a canonical Knowledge IR that merges concepts/relations/taxonomy across documents, preserves full provenance, and explicitly records (never silently resolves) semantic conflicts.
 
+## Milestones
+
+KIR's full v1 scope is delivered across three milestones. This is the long-lived, rarely-changing product-evolution view — the **current** milestone's detailed phase plan lives in `.planning/ROADMAP.md`, which is rewritten when a milestone completes rather than accumulating every future milestone's detail up front.
+
+| Milestone | Delivers | Phases (when active) |
+|-----------|----------|----------------------|
+| **M1 — Deterministic Document Compiler** (current) | Domain model, ports, pass-registry mechanics, and a working Markdown → Document IR pipeline (deterministic passes + one LLM-backed extraction pass) | Phase 1: Compiler Foundation, Phase 2: Document Compiler |
+| **M2 — Canonical Knowledge Compiler** | Multi-document merge: aliases, canonical concepts, relations, taxonomy, conflict detection; full pipeline proven correct on tiered reference corpora | Phase 3: Knowledge Compiler, Phase 4: Validation |
+| **M3 — Production Semantic Compiler** | Incremental compilation, `kir compile` CLI, real 700-doc Slab corpus acceptance | Phase 5: Incremental Compilation, Phase 6: CLI & Real-Corpus Acceptance |
+
+**How this works:** ROADMAP.md currently contains only M1's phases (1–2) in full planning detail (goals, success criteria, plans). M2 and M3 are intentionally *not* detailed in ROADMAP.md yet — planning that detail now would mean `/gsd-plan-phase` and execution agents carry phases that are months away and may still shift. When M1 completes (via `/gsd-complete-milestone`), ROADMAP.md is rewritten for M2's phases (3–4), and so on. The full set of 42 v1 requirements is already defined in REQUIREMENTS.md (split into "M1 — Current Roadmap Scope" and "M2/M3 — Future Milestone Scope, Already Defined") so nothing is lost — only the detailed phase/plan breakdown for M2/M3 is deferred until its milestone becomes current.
+
+## Architecture & Workstreams
+
+This is the persistent architectural shape of the system — independent technical subsystems that cut across milestones and phases. It changes rarely, unlike the roadmap.
+
+| Workstream | Scope |
+|------------|-------|
+| **A — Core** | Domain Model (Concept, Relation, Taxonomy, Document), Ports (LLMPort, RepositoryPort, MarkdownParserPort), Pass API, CompilerContext |
+| **B — Document Compiler** | Markdown Parser, Metadata extraction, Section Parser, Document IR assembly |
+| **C — Knowledge Compiler** | Alias resolution, Concept Merge, Relations, Taxonomy, Conflict detection |
+| **D — Tooling** | Storage/Repository adapter, CLI, Validation infrastructure, Tests |
+| **E — LLM Infrastructure** | Structured Output, Prompt Registry, Prompt Versioning, Provider Adapter, Caching, Replay Tests |
+
+Workstream E is called out separately from Workstream B even though both land primarily in the Document Compiler milestone, because LLM Infrastructure (prompt registry/versioning, swappable provider adapter, response caching, replay-based tests) is substantial standalone infra with its own correctness concerns (determinism, cache-key construction, adapter substitutability) — distinct from Markdown parsing and Document IR assembly. Treating them as one undifferentiated blob is a known failure mode to avoid.
+
+**Cross-cutting concern — The Artifact System:** Several requirements spanning multiple phases form one coherent thread: how a compiled artifact is structured, identified, versioned, and tracked for dependency purposes (Artifact → Metadata → Manifest → Versions → Checksum → Dependencies). Not a separate workstream, but worth keeping visible: Artifact/Manifest structure (Phase 1) → Checksum for LLM cache keys (Phase 2) → Versions + Pass manifest (Phase 4) → Dependency index for incremental scoping (Phase 5).
+
+Any concrete unit of work sits at the intersection of a milestone (which phase) and a workstream (which subsystem) — this is what `/gsd-plan-phase` can use to identify which units of work inside a phase are genuinely independent and can be planned/executed in parallel.
+
 ## Requirements
 
 ### Validated
