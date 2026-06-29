@@ -30,7 +30,7 @@ KIR is best understood as three concentric rings (hexagonal) crossed with a line
 │  │  Parse → Section → Metadata → ExtractConcepts(LLM) →            │    │
 │  │  ResolveAliases → MergeConcepts → BuildRelations →               │    │
 │  │  BuildTaxonomy → Conflict                                        │    │
-│  │  each Pass: (IR_in, PassContext[ports]) -> IR_out                │    │
+│  │  each Pass: (IR_in, CompilerContext[ports]) -> IR_out                │    │
 │  └────────────────────────────────────────────────────────────────┘    │
 │  ┌──────────────────┐   ┌───────────────────────┐                      │
 │  │ DocumentCompiler  │   │ KnowledgeCompiler      │  (use-case services)│
@@ -85,7 +85,7 @@ src/kir/
 │
 ├── passes/                      # Application ring — the pipeline itself
 │   ├── registry.py              # PassRegistry: register(), get_pipeline(), dependency ordering
-│   ├── base.py                  # Pass protocol: __call__(ir_in, ctx: PassContext) -> ir_out
+│   ├── base.py                  # Pass protocol: __call__(ir_in, ctx: CompilerContext) -> ir_out
 │   ├── document/                # Document Compiler passes (Markdown → Document IR)
 │   │   ├── parse.py             # ParsePass (deterministic)
 │   │   ├── section.py           # SectionPass (deterministic)
@@ -131,7 +131,7 @@ src/kir/
 
 ### Pattern 1: Pass as a Pure Function over Ports, Registered by Decorator
 
-**What:** Each compiler pass is a callable with the signature `(ir: InputIR, ctx: PassContext) -> OutputIR`. `PassContext` carries only port interfaces (never concrete adapters) plus run metadata (versions, config). Passes self-register into a `PassRegistry` via decorator at import time — directly analogous to LLVM's `PassBuilder` pipeline-callback registration, but using Python's "decorator runs on module import" mechanic instead of C++ static registration.
+**What:** Each compiler pass is a callable with the signature `(ir: InputIR, ctx: CompilerContext) -> OutputIR`. `CompilerContext` carries only port interfaces (never concrete adapters) plus run metadata (versions, config). Passes self-register into a `PassRegistry` via decorator at import time — directly analogous to LLVM's `PassBuilder` pipeline-callback registration, but using Python's "decorator runs on module import" mechanic instead of C++ static registration.
 
 **When to use:** Every step in both the Document Compiler and Knowledge Compiler pipelines. This is the project's core extension mechanism — it directly satisfies the "adding a new pass does not require modifying existing passes" requirement.
 
@@ -143,7 +143,7 @@ src/kir/
 from typing import Protocol, Callable
 from kir.domain.ir import DocumentIR, KnowledgeIR
 
-class PassContext:
+class CompilerContext:
     """Carries ports + run metadata. No concrete adapters, ever."""
     def __init__(self, llm, repository, compiler_version, schema_version, prompt_version):
         self.llm = llm                  # LLMPort
@@ -155,7 +155,7 @@ class PassContext:
 class Pass(Protocol):
     name: str
     depends_on: tuple[str, ...]   # names of passes that must run first
-    def __call__(self, ir, ctx: PassContext): ...
+    def __call__(self, ir, ctx: CompilerContext): ...
 
 class PassRegistry:
     def __init__(self):
@@ -182,7 +182,7 @@ def register_pass(name: str, depends_on: tuple[str, ...] = ()):
 
 # passes/knowledge/extract_concepts.py
 @register_pass("extract_concepts", depends_on=("parse", "section", "metadata"))
-def extract_concepts_pass(ir: DocumentIR, ctx: PassContext) -> DocumentIR:
+def extract_concepts_pass(ir: DocumentIR, ctx: CompilerContext) -> DocumentIR:
     concepts = ctx.llm.extract_concepts(ir.sections, prompt_version=ctx.prompt_version)
     return ir.model_copy(update={"concepts": concepts})
 ```
@@ -247,7 +247,7 @@ DocumentCompiler.compile_all(source_dir)
 KnowledgeCompiler.compile(all_document_irs)
     ↓ [ExtractConceptsPass(LLM) → ResolveAliasesPass(LLM) → MergeConceptsPass →
     ↓  BuildRelationsPass(LLM) → BuildTaxonomyPass(LLM) → ConflictPass]
-    ↓ each pass: KnowledgeIR_n + PassContext(ports) -> KnowledgeIR_n+1
+    ↓ each pass: KnowledgeIR_n + CompilerContext(ports) -> KnowledgeIR_n+1
     ↓ KnowledgeRepositoryPort.save(knowledge_ir)
     → concepts/*.yaml, relations/*.yaml, taxonomy/*.yaml, aliases/*.yaml, metadata/*.yaml, conflicts/*.yaml
     ↓
@@ -276,7 +276,7 @@ Final Knowledge IR  →  persisted via KnowledgeRepositoryPort
 1. **Provenance threading:** Every Concept/Relation/Definition created by any pass carries a `Provenance` value object (source document id + section) from the moment it's extracted. This is *not* bolted on at the end — `ExtractConceptsPass` must stamp provenance immediately because by the `MergeConceptsPass` stage, multiple documents' concepts are being unioned and origin would otherwise be unrecoverable.
 2. **Incremental recompilation:** `DocumentCompiler` computes a checksum per source file before running any pass; only documents whose checksum differs from the stored `documents/<id>.yaml` checksum field get recompiled (Bazel/content-hash style, not Make-style mtime comparison — mtimes are unreliable across git checkouts/clones). Changed-document IDs are then the *only* input set that triggers Knowledge IR re-merge, not a full-corpus re-run — this is what makes incremental compilation tractable at 700 documents.
 3. **Conflict surfacing, not resolution:** `ConflictPass` is structurally identical to other passes (`IR_in -> IR_out`) but its "output" is additive — it never deletes or silently rewrites a conflicting concept/relation; it appends `Conflict` value objects to the Knowledge IR and lets a human/separate review step decide. This flow must never be short-circuited by an earlier pass "fixing" something it now finds ambiguous — that responsibility belongs solely to `ConflictPass` placed last in the pipeline.
-4. **Version stamping:** `compiler_version`, `schema_version`, `prompt_version` are read from `config/versions.py` by the CLI composition root, placed into `PassContext`, and every persisted artifact (Document IR, Knowledge IR, and every individual Concept/Relation if needed) carries them — this is what makes "identical inputs + versions → identical output" checkable after the fact.
+4. **Version stamping:** `compiler_version`, `schema_version`, `prompt_version` are read from `config/versions.py` by the CLI composition root, placed into `CompilerContext`, and every persisted artifact (Document IR, Knowledge IR, and every individual Concept/Relation if needed) carries them — this is what makes "identical inputs + versions → identical output" checkable after the fact.
 
 ## Scaling Considerations
 
@@ -303,7 +303,7 @@ Final Knowledge IR  →  persisted via KnowledgeRepositoryPort
 
 **What people do:** Inside `MergeConceptsPass`, directly import and call `extract_concepts_pass(...)` to "get fresh data" instead of trusting that the pipeline already ran it and the result is in the IR being passed in.
 **Why it's wrong:** Breaks the "each pass consumes one IR, produces one IR" contract and reintroduces hidden coupling between passes — exactly what the registry/pipeline mechanism exists to prevent. It also makes passes untestable in isolation (PROJECT.md requires deterministic passes to be unit-testable directly).
-**Instead:** Passes only ever read from the `IR` argument they're given and the `PassContext` ports. If a pass needs data computed by an earlier pass, that data must already be a field on the IR by the time it reaches this pass — express that as a `depends_on` declaration in the registry, not a direct function call.
+**Instead:** Passes only ever read from the `IR` argument they're given and the `CompilerContext` ports. If a pass needs data computed by an earlier pass, that data must already be a field on the IR by the time it reaches this pass — express that as a `depends_on` declaration in the registry, not a direct function call.
 
 ### Anti-Pattern 3: One Mega-Pipeline Instead of Two Compilers
 
@@ -313,7 +313,7 @@ Final Knowledge IR  →  persisted via KnowledgeRepositoryPort
 
 ### Anti-Pattern 4: Treating PydanticAI's Agent as the Port Itself
 
-**What people do:** Type the `PassContext.llm` field (or the pass function signature) directly as `pydantic_ai.Agent`, reasoning "PydanticAI is already provider-agnostic, so this is fine."
+**What people do:** Type the `CompilerContext.llm` field (or the pass function signature) directly as `pydantic_ai.Agent`, reasoning "PydanticAI is already provider-agnostic, so this is fine."
 **Why it's wrong:** It's a smaller leak than importing `openai` directly, but it still couples every pass's type signature to a third-party library, and it conflates "which provider" (an `Agent`'s job) with "what capability does this pass need" (the port's job — e.g. `extract_concepts(sections) -> list[ExtractedConcept]`, a *much* narrower interface than the full `Agent` API surface). It also makes swapping PydanticAI itself for something else later a domain-wide change instead of an adapter-only change.
 **Instead:** Define narrow `LLMPort` Protocols per capability (or one `LLMPort` with one method per semantic-analysis pass) in `domain/ports/llm_port.py`; only `adapters/llm/pydantic_ai_adapter.py` imports and constructs `pydantic_ai.Agent`.
 

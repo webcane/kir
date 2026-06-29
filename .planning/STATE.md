@@ -76,6 +76,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260629-jxm | fix todo - Rewrite CLAUDE.md per architectural-invariants structure | 2026-06-29 | fa819d6 | [260629-jxm-fix-todo-rewrite-claude-md-per-architect](./quick/260629-jxm-fix-todo-rewrite-claude-md-per-architect/) |
+| 260629-mu4 | fix todo - Align CompilerContext naming in ARCHITECTURE.md | 2026-06-29 | 0160098 | [260629-mu4-align-compilercontext-naming](./quick/260629-mu4-align-compilercontext-naming/) |
 
 ## Deferred Items
 
