@@ -10,20 +10,20 @@ Requirements actively being planned/executed. Maps to phases in `.planning/ROADM
 ### Compiler Foundation
 
 - [x] **CORE-01**: Domain model (Concept, Relation, Taxonomy, Document entities; ConceptId, RelationId, Checksum, SourceRef value objects) has zero import-level dependency on LLM SDKs, filesystem, or YAML libraries
-- [ ] **CORE-02**: System exposes ports (LLMPort, RepositoryPort, MarkdownParserPort) as typed interfaces that adapters implement, so swapping an LLM provider or storage backend never requires touching domain code
-- [ ] **CORE-03**: Compiler passes register independently (decorator/plugin-based registry) such that adding a new pass never requires modifying existing passes
-- [ ] **CORE-04**: Compiler executes a deterministic pipeline of CompilerPass instances; each pass declares what it consumes, what it produces, and its dependencies, and the pipeline resolves execution order automatically from those declarations rather than a hardcoded sequence
-- [ ] **CORE-05**: All compiler passes execute inside a shared, immutable CompilerContext (carrying config, cache, repository, LLM port, logger, metrics, versions) rather than receiving these piecemeal
+- [x] **CORE-02**: System exposes ports (LLMPort, RepositoryPort, MarkdownParserPort) as typed interfaces that adapters implement, so swapping an LLM provider or storage backend never requires touching domain code
+- [x] **CORE-03**: Compiler passes register independently (decorator/plugin-based registry) such that adding a new pass never requires modifying existing passes
+- [x] **CORE-04**: Compiler executes a deterministic pipeline of CompilerPass instances; each pass declares what it consumes, what it produces, and its dependencies, and the pipeline resolves execution order automatically from those declarations rather than a hardcoded sequence
+- [x] **CORE-05**: All compiler passes execute inside a shared, immutable CompilerContext (carrying config, cache, repository, LLM port, logger, metrics, versions) rather than receiving these piecemeal
 - [x] **CORE-06**: Every pass returns structured diagnostics (each with code, severity, source location, and optional suggestion — Rust-compiler-style) as part of its output artifact, instead of printing or logging output directly
 - [x] **CORE-07**: Passes never mutate a previous IR in place; each pass produces a new immutable artifact
 
 ### Compiler Passes (architectural contract)
 
 - [ ] **PASS-01**: Every transformation of knowledge is implemented as a CompilerPass
-- [ ] **PASS-02**: Each pass consumes exactly one IR representation and produces exactly one IR representation
+- [x] **PASS-02**: Each pass consumes exactly one IR representation and produces exactly one IR representation
 - [ ] **PASS-03**: Passes are deterministic and independently testable in isolation
 - [ ] **PASS-04**: Passes communicate only through IR artifacts and CompilerContext — never through side channels or shared mutable state
-- [ ] **PASS-05**: Pass execution order is derived from declared dependencies (see CORE-04), not hardcoded sequencing
+- [x] **PASS-05**: Pass execution order is derived from declared dependencies (see CORE-04), not hardcoded sequencing
 
 ### Document Compiler
 
@@ -39,7 +39,7 @@ Requirements actively being planned/executed. Maps to phases in `.planning/ROADM
 
 ### Extensibility
 
-- [ ] **EXT-01**: New CompilerPass implementations can be discovered and registered without modifying the core pipeline (plugin-style registration), so third-party/future passes are addable the same way built-in passes are
+- [x] **EXT-01**: New CompilerPass implementations can be discovered and registered without modifying the core pipeline (plugin-style registration), so third-party/future passes are addable the same way built-in passes are
 
 ### Storage
 
