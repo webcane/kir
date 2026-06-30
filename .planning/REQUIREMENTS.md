@@ -19,10 +19,10 @@ Requirements actively being planned/executed. Maps to phases in `.planning/ROADM
 
 ### Compiler Passes (architectural contract)
 
-- [ ] **PASS-01**: Every transformation of knowledge is implemented as a CompilerPass
+- [x] **PASS-01**: Every transformation of knowledge is implemented as a CompilerPass
 - [x] **PASS-02**: Each pass consumes exactly one IR representation and produces exactly one IR representation
-- [ ] **PASS-03**: Passes are deterministic and independently testable in isolation
-- [ ] **PASS-04**: Passes communicate only through IR artifacts and CompilerContext — never through side channels or shared mutable state
+- [x] **PASS-03**: Passes are deterministic and independently testable in isolation
+- [x] **PASS-04**: Passes communicate only through IR artifacts and CompilerContext — never through side channels or shared mutable state
 - [x] **PASS-05**: Pass execution order is derived from declared dependencies (see CORE-04), not hardcoded sequencing
 
 ### Document Compiler
@@ -43,8 +43,8 @@ Requirements actively being planned/executed. Maps to phases in `.planning/ROADM
 
 ### Storage
 
-- [ ] **STOR-01**: Each artifact (document, concept, relation, taxonomy node, alias, conflict, metadata) is stored as an individual YAML file — no monolithic JSON
-- [ ] **STOR-02**: Generated kir/ output is written to a directory separate from raw sources; raw source files are never modified by the compiler
+- [x] **STOR-01**: Each artifact (document, concept, relation, taxonomy node, alias, conflict, metadata) is stored as an individual YAML file — no monolithic JSON
+- [x] **STOR-02**: Generated kir/ output is written to a directory separate from raw sources; raw source files are never modified by the compiler
 
 ## M2 — Future Milestone Scope, Already Defined (Knowledge Compiler + Validation)
 

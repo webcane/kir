@@ -21,7 +21,7 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
 
 ## Phases
 
-- [ ] **Phase 1: Compiler Foundation** - Domain model, ports, CompilerContext, and pass-registry mechanics exist and are proven in isolation with fake passes, with zero LLM/filesystem/YAML imports in domain code
+- [x] **Phase 1: Compiler Foundation** - Domain model, ports, CompilerContext, and pass-registry mechanics exist and are proven in isolation with fake passes, with zero LLM/filesystem/YAML imports in domain code (completed 2026-06-30)
 - [ ] **Phase 2: Document Compiler** - Markdown sources compile into Document IR end-to-end, through deterministic passes and one LLM-backed extraction pass, with a fake adapter proving LLMPort is swappable
 
 ## Phase Details
@@ -39,7 +39,7 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
   4. A fake LLMPort, fake RepositoryPort, and fake MarkdownParserPort each satisfy their respective port contracts and can be swapped in CompilerContext without any domain or pass code change
   5. Writing a fake artifact through the repository port produces one individual YAML file per artifact (no monolithic JSON), in a directory that is verifiably separate from any raw-source directory
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 Plans:
 **Wave 1**
 
@@ -49,7 +49,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-04-PLAN.md — Fakes, YAML repository adapter, end-to-end proofs (CORE-02, CORE-04, CORE-06, PASS-01, PASS-03, PASS-04, STOR-01, STOR-02)
+- [x] 01-04-PLAN.md — Fakes, YAML repository adapter, end-to-end proofs (CORE-02, CORE-04, CORE-06, PASS-01, PASS-03, PASS-04, STOR-01, STOR-02)
 
 ### Phase 2: Document Compiler
 
@@ -68,5 +68,5 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Compiler Foundation | 3/4 | In Progress|  |
+| 1. Compiler Foundation | 4/4 | Complete   | 2026-06-30 |
 | 2. Document Compiler | 0/TBD | Not started | - |
