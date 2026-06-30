@@ -88,5 +88,8 @@
   "granularity": "standard",
   "plan_review": {
     "source_grounding": true
+  },
+  "graphify": {
+    "enabled": true
   }
 }
