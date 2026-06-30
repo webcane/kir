@@ -133,3 +133,7 @@ None - `ruamel.yaml` was added via `uv add` (no external service configuration),
 ---
 *Phase: 01-compiler-foundation*
 *Completed: 2026-06-30*
+
+## Self-Check: PASSED
+
+All 10 created source/test files and this SUMMARY.md verified present on disk. All 3 commit hashes (ec391ae, cccdccc, 670a15d) verified present in git log.
