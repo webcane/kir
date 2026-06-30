@@ -5,11 +5,13 @@ is established before any fixtures are added. Plan 04 adds
 `fake_compiler_context` (a CompilerContext built from fake ports) and
 `fake_registry` (a fresh PassRegistry with fake_pass_a/fake_pass_b
 registered, constructed per-test to avoid cross-test interference).
+Plan 02-01 adds `block_real_llm_calls` (autouse guard, LLM-03).
 """
 
 from __future__ import annotations
 
 import pytest
+from pydantic_ai import models as pydantic_ai_models
 
 from kir.core.config.versions import compiler_version, schema_version
 from kir.core.passes.context import CompilerContext
@@ -18,6 +20,20 @@ from tests.core.passes.fakes.fake_llm_port import FakeLLMPort
 from tests.core.passes.fakes.fake_parser import FakeMarkdownParser
 from tests.core.passes.fakes.fake_passes import fake_pass_a, fake_pass_b
 from tests.core.passes.fakes.fake_repository import InMemoryFakeRepository
+
+
+@pytest.fixture(autouse=True, scope="session")
+def block_real_llm_calls() -> object:
+    """Ensure no test accidentally triggers a live LLM API call (LLM-03).
+
+    Sets pydantic_ai.models.ALLOW_MODEL_REQUESTS = False globally for the
+    test session. Any test that reaches a real API will fail loudly with a
+    pydantic_ai error rather than making an expensive/non-deterministic call.
+    """
+    original = pydantic_ai_models.ALLOW_MODEL_REQUESTS
+    pydantic_ai_models.ALLOW_MODEL_REQUESTS = False
+    yield
+    pydantic_ai_models.ALLOW_MODEL_REQUESTS = original
 
 
 @pytest.fixture
