@@ -148,3 +148,7 @@ None - pure domain-model/ports code, no external service configuration required.
 ---
 *Phase: 01-compiler-foundation*
 *Completed: 2026-06-30*
+
+## Self-Check: PASSED
+
+All 16 spot-checked created files (14 source files, the import-boundary test, and this SUMMARY.md) verified present on disk. All 4 commit hashes (250e0fc, 2854ce8, 8c8d30f, 3a6a084) verified present in git log.
