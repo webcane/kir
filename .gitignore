@@ -220,3 +220,4 @@ __marimo__/
 # Idea/PyCahrm
 /.idea/
 /graphify-out/
+/.planning/graphs/
