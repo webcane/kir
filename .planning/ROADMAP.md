@@ -64,11 +64,11 @@ Plans:
   4. Re-running the extraction pass against an unchanged document (same checksum, prompt version, schema version, pinned model id) reproduces the identical cached output without re-calling the LLM
   5. The extraction pass's unit tests run entirely against recorded/mocked LLM responses (golden fixtures), with zero live API calls made during the test suite
 
-**Plans:** 4 plans
+**Plans:** 1/5 plans executed
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Contracts and test infrastructure: narrow LLMPort/MarkdownParserPort, add Document.diagnostics, extend CompilerContext, install deps, wire asyncio_mode + ALLOW_MODEL_REQUESTS guard (DOC-01, DOC-03, LLM-01, LLM-02, LLM-03)
+- [x] 02-01-PLAN.md — Contracts and test infrastructure: narrow LLMPort/MarkdownParserPort, add Document.diagnostics, extend CompilerContext, install deps, wire asyncio_mode + ALLOW_MODEL_REQUESTS guard (DOC-01, DOC-03, LLM-01, LLM-02, LLM-03)
 
 **Wave 2** *(parallel — no file overlap)*
 
@@ -84,4 +84,4 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Compiler Foundation | 4/4 | Complete    | 2026-06-30 |
-| 2. Document Compiler | 0/4 | Not started | - |
+| 2. Document Compiler | 1/5 | In Progress|  |
