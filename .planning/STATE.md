@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-06-30T05:09:50.473Z"
+last_updated: "2026-06-30T05:27:09.050Z"
 last_activity: 2026-06-30
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 ## Current Position
 
 Phase: 1 (Compiler Foundation) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-06-30
 
-Progress: [███░░░░░░░] 25%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [███░░░░░░░] 25%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 15min | 2 tasks | 22 files |
+| Phase 01 P02 | 25min | 3 tasks | 23 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ Recent decisions affecting current work:
 - [Structure]: ROADMAP.md restructured to hold only the current milestone (M1, Phases 1-2) rather than all 6 phases up front — per user feedback that Project should be the long-lived architecture doc and Roadmap should be the working document for the current milestone only. PROJECT.md gained ## Milestones (M1 Deterministic Document Compiler / M2 Canonical Knowledge Compiler / M3 Production Semantic Compiler) and ## Architecture & Workstreams (the 5 workstreams + Artifact System thread, moved here since they're persistent and rarely change). REQUIREMENTS.md reorganized into M1/M2/M3 sections with a milestone column added to traceability. No requirement was added, removed, or rescoped — only the planning-detail boundary changed. When M1 completes via /gsd-complete-milestone, ROADMAP.md gets rewritten for M2 (Phase 3-4).
 - [Phase 01-01]: Removed uv init's auto-generated main() function and [project.scripts] CLI entrypoint — no CLI exists yet (tooling/cli is a later-phase deliverable)
 - [Phase 01-01]: Added a pytest_sessionfinish hook in tests/conftest.py to normalize pytest's exit code 5 (NO_TESTS_COLLECTED) to 0, since the plan explicitly requires uv run pytest to exit 0 with zero tests collected
+- [Phase 01-02]: SourceRef's canonical home is models/provenance.py, not value_objects.py — value_objects.py imports it rather than redefining it
+- [Phase 01-02]: Relation.relation_type stays a plain str, not an enum — relation vocabulary is core-and-extensible, finalized in Phase 3/M2
+- [Phase 01-02]: ArtifactManifest scoped to exactly artifact_id + version per D-04, no checksum/dependency-index field this phase
 
 ### Pending Todos
 
@@ -98,7 +102,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-30T05:09:50.465Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-06-30T05:27:09.041Z
+Stopped at: Completed 01-02-PLAN.md
 Resume file: None
 Last activity: 2026-06-29 - Completed quick task 260629-jxm: fix todo - Rewrite CLAUDE.md per architectural-invariants structure
