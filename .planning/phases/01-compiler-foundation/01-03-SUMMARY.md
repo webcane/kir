@@ -123,3 +123,7 @@ None - pure pass-mechanics/DI-container code, no external service configuration 
 ---
 *Phase: 01-compiler-foundation*
 *Completed: 2026-06-30*
+
+## Self-Check: PASSED
+
+All 7 created source/test files and this SUMMARY.md verified present on disk. All 4 task commit hashes (b47dced, 1cdf69f, b29bfa0, 9453db7) plus the SUMMARY commit (65a269a) verified present in git log.
