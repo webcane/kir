@@ -45,8 +45,10 @@ class PassRegistry:
             sorter = TopologicalSorter(graph)
             ordered_names = list(sorter.static_order())
         except CycleError as exc:
-            # exc.args[1] is the list of nodes forming the cycle (CPython docs)
+            # exc.args[1] is the list of nodes forming the cycle (CPython docs).
+            # Preserve it on the re-raised exception so callers can still
+            # read .args[1]; only args[0] (the message) gains our context.
             raise CycleError(
-                f"Circular pass dependency detected: {exc.args[1]}"
+                f"Circular pass dependency detected: {exc.args[1]}", exc.args[1]
             ) from exc
         return [self._passes[name] for name in ordered_names]

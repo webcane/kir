@@ -46,8 +46,13 @@ def test_circular_dependency_detected_at_pipeline_build_time(
 ) -> None:
     registry.register(_fake_pass("a", depends_on=("b",)))
     registry.register(_fake_pass("b", depends_on=("a",)))
-    with pytest.raises(CycleError):
+    with pytest.raises(CycleError) as exc_info:
         registry.pipeline()
+    # exc.args[1] must still carry the structured cycle-node list after
+    # the re-raise, not just a formatted string in args[0].
+    cycle_nodes = exc_info.value.args[1]
+    assert isinstance(cycle_nodes, list)
+    assert set(cycle_nodes) >= {"a", "b"}
 
 
 def test_pipeline_returns_dependency_ordered_passes(registry: PassRegistry) -> None:
