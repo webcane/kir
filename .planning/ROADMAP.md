@@ -36,6 +36,13 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
   3. Running the same set of fake passes twice against the same fake inputs produces byte-identical output artifacts, and each pass's output includes structured diagnostics (errors/warnings/infos) rather than printed/logged side effects
   4. A fake LLMPort, fake RepositoryPort, and fake MarkdownParserPort each satisfy their respective port contracts and can be swapped in CompilerContext without any domain or pass code change
   5. Writing a fake artifact through the repository port produces one individual YAML file per artifact (no monolithic JSON), in a directory that is verifiably separate from any raw-source directory
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold uv project (pyproject.toml, src/kir 5-package skeleton, pytest baseline)
+- [ ] 01-02-PLAN.md — Domain models, value objects, and ports (CORE-01, CORE-06, CORE-07)
+- [ ] 01-03-PLAN.md — Pass registry, CompilerContext, version constants (CORE-02..05, PASS-02, PASS-05, EXT-01)
+- [ ] 01-04-PLAN.md — Fakes, YAML repository adapter, end-to-end proofs (CORE-02, CORE-04, CORE-06, PASS-01, PASS-03, PASS-04, STOR-01, STOR-02)
 
 ### Phase 2: Document Compiler
 **Goal**: A single Markdown source compiles deterministically into a self-contained Document IR, including LLM-backed concept/glossary/entity/reference extraction, without merging information across documents.
@@ -52,5 +59,5 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Compiler Foundation | 0/TBD | Not started | - |
+| 1. Compiler Foundation | 0/4 | Not started | - |
 | 2. Document Compiler | 0/TBD | Not started | - |
