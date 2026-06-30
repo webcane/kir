@@ -22,4 +22,5 @@ testpaths = ["tests"]
 [dependency-groups]
 dev = [
     "pytest>=8",
+    "ruff>=0.6",
 ]
