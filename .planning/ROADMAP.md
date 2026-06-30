@@ -39,11 +39,11 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
   4. A fake LLMPort, fake RepositoryPort, and fake MarkdownParserPort each satisfy their respective port contracts and can be swapped in CompilerContext without any domain or pass code change
   5. Writing a fake artifact through the repository port produces one individual YAML file per artifact (no monolithic JSON), in a directory that is verifiably separate from any raw-source directory
 
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Scaffold uv project (pyproject.toml, src/kir 5-package skeleton, pytest baseline)
+- [x] 01-01-PLAN.md — Scaffold uv project (pyproject.toml, src/kir 5-package skeleton, pytest baseline)
 - [ ] 01-02-PLAN.md — Domain models, value objects, and ports (CORE-01, CORE-06, CORE-07)
 - [ ] 01-03-PLAN.md — Pass registry, CompilerContext, version constants (CORE-02..05, PASS-02, PASS-05, EXT-01)
 
@@ -68,5 +68,5 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Compiler Foundation | 0/4 | Not started | - |
+| 1. Compiler Foundation | 1/4 | In Progress|  |
 | 2. Document Compiler | 0/TBD | Not started | - |

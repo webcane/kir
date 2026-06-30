@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-06-30T04:55:28.309Z"
-last_activity: 2026-06-30 -- Phase 1 planning complete
+last_updated: "2026-06-30T05:09:50.473Z"
+last_activity: 2026-06-30
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 4
-  completed_plans: 0
+  completed_plans: 1
   percent: 0
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 
 ## Current Position
 
-Phase: 1 of 2 (current milestone M1; 1 of 6 overall v1 phases)
-Plan: 0 of TBD in current phase
+Phase: 1 (Compiler Foundation) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
-Last activity: 2026-06-30 -- Phase 1 planning complete
+Last activity: 2026-06-30
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [███░░░░░░░] 25%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P01 | 15min | 2 tasks | 22 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 - [Roadmap]: Added a Workstreams section to ROADMAP.md (Core, Document Compiler, Knowledge Compiler, Tooling, LLM Infrastructure) as an orthogonal axis to the fixed phase sequence — phase order and requirement-to-phase mapping were explicitly NOT changed; this is an annotation/refinement pass to support parallel planning and execution, not a restructuring.
 - [Roadmap]: Phase 1 and Phase 2 descriptions now explicitly name their concrete sub-deliverables (Phase 1: Pass Registry, Pipeline, Diagnostics model, Dependency Graph, Artifact Manifest, Cache abstraction; Phase 2: Structured Output, Prompt Registry, Prompt Versioning, Provider Adapter, Caching, Replay Tests) so these don't collapse into vague "domain model" / "extract.py" treatment during planning. No new requirements were introduced — these are existing CORE/EXT/LLM requirements named explicitly.
 - [Structure]: ROADMAP.md restructured to hold only the current milestone (M1, Phases 1-2) rather than all 6 phases up front — per user feedback that Project should be the long-lived architecture doc and Roadmap should be the working document for the current milestone only. PROJECT.md gained ## Milestones (M1 Deterministic Document Compiler / M2 Canonical Knowledge Compiler / M3 Production Semantic Compiler) and ## Architecture & Workstreams (the 5 workstreams + Artifact System thread, moved here since they're persistent and rarely change). REQUIREMENTS.md reorganized into M1/M2/M3 sections with a milestone column added to traceability. No requirement was added, removed, or rescoped — only the planning-detail boundary changed. When M1 completes via /gsd-complete-milestone, ROADMAP.md gets rewritten for M2 (Phase 3-4).
+- [Phase 01-01]: Removed uv init's auto-generated main() function and [project.scripts] CLI entrypoint — no CLI exists yet (tooling/cli is a later-phase deliverable)
+- [Phase 01-01]: Added a pytest_sessionfinish hook in tests/conftest.py to normalize pytest's exit code 5 (NO_TESTS_COLLECTED) to 0, since the plan explicitly requires uv run pytest to exit 0 with zero tests collected
 
 ### Pending Todos
 
@@ -95,7 +98,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-30T04:30:42.717Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-compiler-foundation/01-CONTEXT.md
+Last session: 2026-06-30T05:09:50.465Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None
 Last activity: 2026-06-29 - Completed quick task 260629-jxm: fix todo - Rewrite CLAUDE.md per architectural-invariants structure
