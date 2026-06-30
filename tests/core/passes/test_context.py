@@ -11,7 +11,9 @@ from kir.core.passes.context import CompilerContext
 
 
 class _FakeLLM:
-    def extract(self, text: str) -> object:
+    model_id: str = "fake:v0"
+
+    async def extract(self, *, sections: list, prompt: str) -> object:
         return None
 
 
@@ -24,8 +26,8 @@ class _FakeRepository:
 
 
 class _FakeParser:
-    def parse(self, text: str) -> object:
-        return None
+    def parse(self, text: str) -> list:
+        return []
 
 
 def _make_context() -> CompilerContext:

@@ -64,15 +64,17 @@ def test_all_diagnostics_are_structured_not_printed(
     assert captured.err == ""
 
 
-def test_fake_ports_construct_with_no_arguments_and_are_callable() -> None:
+async def test_fake_ports_construct_with_no_arguments_and_are_callable() -> None:
     llm = FakeLLMPort()
     repository = InMemoryFakeRepository()
     parser = FakeMarkdownParser()
 
-    assert isinstance(llm.extract("some text"), object)
+    # LLMPort.extract() is now async and takes keyword-only sections + prompt (D-02)
+    result = await llm.extract(sections=[], prompt="test")
+    assert isinstance(result, object)
     repository.save("artifact-1", {"id": "artifact-1"})
     assert repository.load("artifact-1") == {"id": "artifact-1"}
-    assert isinstance(parser.parse("# heading"), object)
+    assert isinstance(parser.parse("# heading"), list)
 
 
 def test_fake_compiler_context_composes_with_fake_pass(

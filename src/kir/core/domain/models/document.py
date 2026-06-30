@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
+from kir.core.domain.models.diagnostic import Diagnostic
 from kir.core.domain.value_objects import Checksum
 
 
@@ -34,3 +35,4 @@ class Document(BaseModel):
     glossary: tuple[str, ...] = ()
     entities: tuple[str, ...] = ()
     references: tuple[str, ...] = ()
+    diagnostics: tuple[Diagnostic, ...] = ()
