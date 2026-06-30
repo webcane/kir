@@ -64,9 +64,24 @@ Plans:
   4. Re-running the extraction pass against an unchanged document (same checksum, prompt version, schema version, pinned model id) reproduces the identical cached output without re-calling the LLM
   5. The extraction pass's unit tests run entirely against recorded/mocked LLM responses (golden fixtures), with zero live API calls made during the test suite
 
+**Plans:** 4 plans
+Plans:
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Contracts and test infrastructure: narrow LLMPort/MarkdownParserPort, add Document.diagnostics, extend CompilerContext, install deps, wire asyncio_mode + ALLOW_MODEL_REQUESTS guard (DOC-01, DOC-03, LLM-01, LLM-02, LLM-03)
+
+**Wave 2** *(parallel — no file overlap)*
+
+- [ ] 02-02-PLAN.md — LLM infrastructure package: PydanticAIAdapter, FakeLLMAdapter, LLMCache, InMemoryCache, PromptRegistry, extract_v1.md prompt, LLM unit tests (LLM-01, LLM-02, LLM-03)
+- [ ] 02-03-PLAN.md — Deterministic passes: MarkdownItAdapter, ParsePass, SectionPass, MetadataPass, document_registry, pass unit tests (DOC-01, DOC-02)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-04-PLAN.md — ExtractConceptsPass (async, D-03 failure, cache), DocumentCompiler service, 10 golden fixtures, extraction + integration tests (DOC-01, DOC-02, DOC-03, LLM-01, LLM-02, LLM-03)
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Compiler Foundation | 4/4 | Complete    | 2026-06-30 |
-| 2. Document Compiler | 0/TBD | Not started | - |
+| 2. Document Compiler | 0/4 | Not started | - |
