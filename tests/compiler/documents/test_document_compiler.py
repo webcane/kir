@@ -163,7 +163,6 @@ async def test_no_cross_contamination(tmp_path: pathlib.Path) -> None:
 
 def test_document_compiler_pipeline_has_four_passes() -> None:
     """DocumentCompiler._pipeline contains exactly 4 passes (parse, section, metadata, extract_concepts)."""
-    _, _ = _make_compiler_context()  # build compiler via helper then inspect
     # Build directly to access _pipeline
     from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput
 
