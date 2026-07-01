@@ -23,7 +23,7 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
 
 - [x] **Phase 1: Compiler Foundation** - Domain model, ports, CompilerContext, and pass-registry mechanics exist and are proven in isolation with fake passes, with zero LLM/filesystem/YAML imports in domain code (completed 2026-06-30)
 - [x] **Phase 2: Document Compiler** - Markdown sources compile into Document IR end-to-end, through deterministic passes and one LLM-backed extraction pass, with a fake adapter proving LLMPort is swappable (completed 2026-07-01)
-- [ ] **Phase 2.1: Close gap — STOR-01/STOR-02** - Wire DocumentCompiler to RepositoryPort for artifact persistence (INSERTED — urgent gap close)
+- [x] **Phase 2.1: Close gap — STOR-01/STOR-02** - Wire DocumentCompiler to RepositoryPort for artifact persistence (INSERTED — urgent gap close) (completed 2026-07-01)
 
 ## Phase Details
 
@@ -87,11 +87,11 @@ Plans:
 **Depends on**: Phase 2
 **Requirements**: STOR-01, STOR-02
 
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 Plans:
 **Wave 1**
 
-- [ ] 02.1-01-PLAN.md — Wire repository.save() into DocumentCompiler.compile() and assert persistence in integration tests (STOR-01, STOR-02)
+- [x] 02.1-01-PLAN.md — Wire repository.save() into DocumentCompiler.compile() and assert persistence in integration tests (STOR-01, STOR-02)
 
 ## Progress
 
@@ -99,4 +99,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Compiler Foundation | 4/4 | Complete    | 2026-06-30 |
 | 2. Document Compiler | 5/5 | Complete   | 2026-07-01 |
-| 2.1 Close gap STOR-01/STOR-02 | 0/1 | In progress | — |
+| 2.1 Close gap STOR-01/STOR-02 | 1/1 | Complete   | 2026-07-01 |
