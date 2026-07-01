@@ -90,7 +90,10 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+1. Add Google-style docstrings to all public APIs
+2. Audit codebase against STYLE_GUIDE.md rules
+3. Upgrade to Python 3.14 and finalize type-hint strategy
+4. Add use cases to README based on LLVM-for-knowledge analogy
 
 ### Blockers/Concerns
 
