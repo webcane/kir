@@ -5,8 +5,6 @@ registration (fake_passes.py's @register_pass) always fires, regardless of
 test collection order (RESEARCH.md Pitfall 1 mitigation — mandatory).
 """
 
-from __future__ import annotations
-
 from tests.core.passes.fakes import (  # noqa: F401
     fake_cache,
     fake_llm_port,

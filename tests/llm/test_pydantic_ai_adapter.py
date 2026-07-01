@@ -1,13 +1,10 @@
 """Unit tests for FakeLLMAdapter and PydanticAIAdapter (LLM-01, LLM-03)."""
 
-from __future__ import annotations
-
 import pytest
 from pydantic_ai.models.test import TestModel
 
 from kir.llm.fake_adapter import FakeLLMAdapter
 from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput, PydanticAIAdapter
-
 
 class TestFakeLLMAdapter:
     async def test_fake_llm_adapter_satisfies_llm_port_structurally(self) -> None:
@@ -35,7 +32,6 @@ class TestFakeLLMAdapter:
     def test_fake_llm_adapter_model_id_attribute(self) -> None:
         assert FakeLLMAdapter.model_id == "fake:v0"
         assert FakeLLMAdapter().model_id == "fake:v0"
-
 
 class TestPydanticAIAdapter:
     async def test_pydantic_ai_adapter_uses_fake_model(self) -> None:

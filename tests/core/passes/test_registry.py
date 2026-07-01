@@ -3,14 +3,11 @@ graphlib.TopologicalSorter-based dependency ordering, cycle/missing-dependency
 detection, and the EXT-01 no-edit-existing-files extensibility proof.
 """
 
-from __future__ import annotations
-
 from graphlib import CycleError
 
 import pytest
 
 from kir.core.passes.registry import MissingDependencyError, PassRegistry
-
 
 def _fake_pass(name: str, depends_on: tuple[str, ...] = ()):
     def fn(ir: object, ctx: object) -> object:
@@ -20,11 +17,9 @@ def _fake_pass(name: str, depends_on: tuple[str, ...] = ()):
     fn.depends_on = depends_on
     return fn
 
-
 @pytest.fixture
 def registry() -> PassRegistry:
     return PassRegistry()
-
 
 def test_register_with_unregistered_dependency_does_not_raise(
     registry: PassRegistry,
@@ -32,14 +27,12 @@ def test_register_with_unregistered_dependency_does_not_raise(
     # D-02: registration itself must NOT validate depends_on.
     registry.register(_fake_pass("a", depends_on=("nonexistent",)))
 
-
 def test_missing_dependency_detected_at_pipeline_build_time_not_register(
     registry: PassRegistry,
 ) -> None:
     registry.register(_fake_pass("a", depends_on=("nonexistent",)))
     with pytest.raises(MissingDependencyError, match="nonexistent"):
         registry.pipeline()
-
 
 def test_circular_dependency_detected_at_pipeline_build_time(
     registry: PassRegistry,
@@ -54,7 +47,6 @@ def test_circular_dependency_detected_at_pipeline_build_time(
     assert isinstance(cycle_nodes, list)
     assert set(cycle_nodes) >= {"a", "b"}
 
-
 def test_pipeline_returns_dependency_ordered_passes(registry: PassRegistry) -> None:
     # Register out of dependency order on purpose.
     registry.register(_fake_pass("c", depends_on=("a", "b")))
@@ -67,7 +59,6 @@ def test_pipeline_returns_dependency_ordered_passes(registry: PassRegistry) -> N
     assert names.index("a") < names.index("b")
     assert names.index("a") < names.index("c")
     assert names.index("b") < names.index("c")
-
 
 def test_ext01_new_pass_registered_in_this_file_appears_in_pipeline(
     registry: PassRegistry,

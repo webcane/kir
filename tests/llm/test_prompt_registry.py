@@ -1,11 +1,8 @@
 """Unit tests for PromptRegistry and PromptNotFoundError."""
 
-from __future__ import annotations
-
 import pytest
 
 from kir.llm.prompts.registry import PromptNotFoundError, PromptRegistry
-
 
 class TestPromptRegistry:
     def test_render_extract_v1_returns_non_empty_string(self) -> None:

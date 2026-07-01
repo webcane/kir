@@ -2,9 +2,6 @@
 contract test (tests/core/test_repository_port_contract.py) alongside
 YamlFileRepository to prove port-substitutability."""
 
-from __future__ import annotations
-
-
 class InMemoryFakeRepository:
     def __init__(self) -> None:
         self._store: dict[str, object] = {}

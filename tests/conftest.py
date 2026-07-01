@@ -8,8 +8,6 @@ registered, constructed per-test to avoid cross-test interference).
 Plan 02-01 adds `block_real_llm_calls` (autouse guard, LLM-03).
 """
 
-from __future__ import annotations
-
 import pytest
 from pydantic_ai import models as pydantic_ai_models
 
@@ -20,7 +18,6 @@ from tests.core.passes.fakes.fake_llm_port import FakeLLMPort
 from tests.core.passes.fakes.fake_parser import FakeMarkdownParser
 from tests.core.passes.fakes.fake_passes import fake_pass_a, fake_pass_b
 from tests.core.passes.fakes.fake_repository import InMemoryFakeRepository
-
 
 @pytest.fixture(autouse=True, scope="session")
 def block_real_llm_calls() -> object:
@@ -35,7 +32,6 @@ def block_real_llm_calls() -> object:
     yield
     pydantic_ai_models.ALLOW_MODEL_REQUESTS = original
 
-
 @pytest.fixture
 def fake_compiler_context() -> CompilerContext:
     """A CompilerContext constructed from fake ports — proves CompilerContext
@@ -48,7 +44,6 @@ def fake_compiler_context() -> CompilerContext:
         schema_version=schema_version,
     )
 
-
 @pytest.fixture
 def fake_registry() -> PassRegistry:
     """A fresh PassRegistry with fake_pass_a/fake_pass_b registered.
@@ -60,7 +55,6 @@ def fake_registry() -> PassRegistry:
     registry.register(fake_pass_a)
     registry.register(fake_pass_b)
     return registry
-
 
 def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
     """Treat "no tests collected" as success, not failure.

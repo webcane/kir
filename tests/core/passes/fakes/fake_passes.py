@@ -7,14 +7,11 @@ Per RESEARCH.md Pitfall 1: decorator registration only fires on import, so
 to guarantee registration regardless of test collection order.
 """
 
-from __future__ import annotations
-
 from kir.core.domain.ir import FakeIR
 from kir.core.domain.models.diagnostic import Diagnostic, Severity
 from kir.core.passes.registry import PassRegistry
 
 registry = PassRegistry()
-
 
 def register_pass(name: str, depends_on: tuple[str, ...] = ()):
     def decorator(fn):
@@ -24,7 +21,6 @@ def register_pass(name: str, depends_on: tuple[str, ...] = ()):
         return fn
 
     return decorator
-
 
 @register_pass("fake_a")
 def fake_pass_a(ir: FakeIR, ctx: object) -> FakeIR:
@@ -41,7 +37,6 @@ def fake_pass_a(ir: FakeIR, ctx: object) -> FakeIR:
             ),
         }
     )
-
 
 @register_pass("fake_b", depends_on=("fake_a",))
 def fake_pass_b(ir: FakeIR, ctx: object) -> FakeIR:

@@ -3,20 +3,16 @@
 artifact_id safety proofs for YamlFileRepository.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import pytest
 
 from kir.tooling.repository.yaml_repository import YamlFileRepository
 
-
 def test_save_then_load_roundtrips(tmp_path: Path) -> None:
     repo = YamlFileRepository(tmp_path / "kir")
     repo.save("artifact-1", {"id": "artifact-1", "version": 1})
     assert repo.load("artifact-1") == {"id": "artifact-1", "version": 1}
-
 
 def test_one_file_per_artifact(tmp_path: Path) -> None:
     output_dir = tmp_path / "kir"
@@ -26,7 +22,6 @@ def test_one_file_per_artifact(tmp_path: Path) -> None:
 
     yaml_files = list(output_dir.glob("*.yaml"))
     assert len(yaml_files) == 2
-
 
 def test_output_dir_disjoint_from_raw_dir(tmp_path: Path) -> None:
     output_dir = tmp_path / "kir"
@@ -46,7 +41,6 @@ def test_output_dir_disjoint_from_raw_dir(tmp_path: Path) -> None:
     assert not output_dir.is_relative_to(raw_dir)
     assert not raw_dir.is_relative_to(output_dir)
 
-
 def test_path_traversal_artifact_id_does_not_escape_output_dir(
     tmp_path: Path,
 ) -> None:
@@ -59,7 +53,6 @@ def test_path_traversal_artifact_id_does_not_escape_output_dir(
     # No file was written outside the configured output directory.
     assert not (tmp_path / "etc").exists()
     assert not (tmp_path.parent / "etc").exists()
-
 
 def test_path_traversal_artifact_id_rejected_on_load(tmp_path: Path) -> None:
     output_dir = tmp_path / "kir"

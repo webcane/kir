@@ -4,15 +4,12 @@ MetadataPass populates id (slug of first heading), title, checksum (SHA-256 hex
 of source), and language='en' on the Document IR. Depends on parse and section.
 """
 
-from __future__ import annotations
-
 import hashlib
 
 from kir.compiler.documents.passes.metadata import metadata_pass
 from kir.core.domain.models.document import Document, Section
 from kir.core.domain.value_objects import Checksum
 from kir.core.passes.context import CompilerContext
-
 
 def _make_document(
     source: str = "test source",
@@ -27,7 +24,6 @@ def _make_document(
         language="",
         sections=sections,
     )
-
 
 class TestMetadataPassChecksum:
     def test_metadata_pass_computes_sha256_checksum(
@@ -63,7 +59,6 @@ class TestMetadataPassChecksum:
         result2 = metadata_pass(ir2, fake_compiler_context)
 
         assert result1.checksum.value != result2.checksum.value
-
 
 class TestMetadataPassTitle:
     def test_metadata_pass_title_from_first_heading(
@@ -114,7 +109,6 @@ class TestMetadataPassTitle:
 
         assert result.title == "Untitled"
 
-
 class TestMetadataPassId:
     def test_metadata_pass_id_is_slug_of_title(
         self, fake_compiler_context: CompilerContext
@@ -155,7 +149,6 @@ class TestMetadataPassId:
 
         assert result.id == "camelcase-title"
 
-
 class TestMetadataPassLanguage:
     def test_metadata_pass_language_is_en(
         self, fake_compiler_context: CompilerContext
@@ -165,7 +158,6 @@ class TestMetadataPassLanguage:
         result = metadata_pass(ir, fake_compiler_context)
 
         assert result.language == "en"
-
 
 class TestMetadataPassImmutability:
     def test_metadata_pass_returns_immutable_copy(

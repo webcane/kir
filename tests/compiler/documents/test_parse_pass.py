@@ -6,8 +6,6 @@ fake_compiler_context fixture) and MarkdownItAdapter directly to verify
 real heading-based splitting behavior.
 """
 
-from __future__ import annotations
-
 import pytest
 
 from kir.compiler.documents.adapters.markdown_it_adapter import MarkdownItAdapter
@@ -15,7 +13,6 @@ from kir.compiler.documents.passes.parse import parse_pass
 from kir.core.domain.models.document import Document, Section
 from kir.core.domain.value_objects import Checksum
 from kir.core.passes.context import CompilerContext
-
 
 def _make_document(source: str = "test source") -> Document:
     """Build a minimal Document with safe defaults for testing."""
@@ -27,7 +24,6 @@ def _make_document(source: str = "test source") -> Document:
         language="en",
         sections=(),
     )
-
 
 class TestParsePassWithFakeParser:
     """Tests using the FakeMarkdownParser (via fake_compiler_context fixture)."""
@@ -67,7 +63,6 @@ class TestParsePassWithFakeParser:
 
         # FakeMarkdownParser.parse() returns [Section(heading="fake", content=text)]
         assert result.sections[0].content == source
-
 
 class TestParsePassWithMarkdownItAdapter:
     """Tests using MarkdownItAdapter directly to verify real heading-based splitting."""

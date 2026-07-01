@@ -4,13 +4,10 @@ SectionPass normalizes section content by stripping leading/trailing whitespace.
 It does not modify headings or add/remove sections.
 """
 
-from __future__ import annotations
-
 from kir.compiler.documents.passes.section import section_pass
 from kir.core.domain.models.document import Document, Section
 from kir.core.domain.value_objects import Checksum
 from kir.core.passes.context import CompilerContext
-
 
 def _make_document_with_sections(*sections: Section) -> Document:
     """Build a Document with the given sections for testing."""
@@ -22,7 +19,6 @@ def _make_document_with_sections(*sections: Section) -> Document:
         language="en",
         sections=tuple(sections),
     )
-
 
 class TestSectionPass:
     def test_section_pass_strips_whitespace_from_content(

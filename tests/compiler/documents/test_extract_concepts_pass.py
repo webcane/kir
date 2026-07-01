@@ -10,8 +10,6 @@ All tests use FakeLLMAdapter — zero live API calls.
 asyncio_mode="auto" is configured globally so no @pytest.mark.asyncio needed.
 """
 
-from __future__ import annotations
-
 from kir.compiler.documents.adapters.markdown_it_adapter import MarkdownItAdapter
 from kir.compiler.documents.passes.extract_concepts import extract_concepts_pass
 from kir.core.config.versions import compiler_version, prompt_version, schema_version
@@ -35,7 +33,6 @@ from tests.core.passes.fakes.fake_repository import InMemoryFakeRepository
 
 _CHECKSUM_VALUE = "a" * 64
 
-
 def _make_doc_with_content(content: str, checksum_value: str = _CHECKSUM_VALUE) -> Document:
     """Build a minimal Document whose source is passed through MarkdownItAdapter
     to produce real sections (needed so the checksum-based cache key is meaningful).
@@ -58,7 +55,6 @@ def _make_doc_with_content(content: str, checksum_value: str = _CHECKSUM_VALUE) 
         sections=sections,
     )
 
-
 def _make_context_with_adapter(
     adapter: FakeLLMAdapter | _ErrorFakeLLMAdapter,
     cache: LLMCache | None = None,
@@ -75,11 +71,9 @@ def _make_context_with_adapter(
         prompts=PromptRegistry(),
     )
 
-
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
-
 
 async def test_extract_concepts_pass_calls_llm_and_populates_document() -> None:
     """extract_concepts_pass calls FakeLLMAdapter once and populates concepts."""
@@ -91,7 +85,6 @@ async def test_extract_concepts_pass_calls_llm_and_populates_document() -> None:
 
     assert adapter.call_count == 1
     assert len(result.concepts) > 0
-
 
 async def test_extract_concepts_pass_cache_hit_skips_llm_call() -> None:
     """LLM-02: second call to same document checksum hits cache, skips LLM (call_count stays 1)."""
@@ -110,7 +103,6 @@ async def test_extract_concepts_pass_cache_hit_skips_llm_call() -> None:
 
     # Both results agree
     assert result_1.concepts == result_2.concepts
-
 
 async def test_extraction_failure_produces_diagnostic_not_halt() -> None:
     """D-03 / LLM-03: LLM failure appends Diagnostic(code='extraction-failed'), does not raise."""
@@ -133,7 +125,6 @@ async def test_extraction_failure_produces_diagnostic_not_halt() -> None:
     assert result.glossary == ()
     assert result.entities == ()
     assert result.references == ()
-
 
 async def test_extract_concepts_pass_with_golden_fixture_doc_01() -> None:
     """Golden fixture replay: doc_01_rich — pass returns DOC_01_EXPECTED concepts."""
@@ -160,7 +151,6 @@ async def test_extract_concepts_pass_with_golden_fixture_doc_01() -> None:
     # Concepts should match DOC_01_EXPECTED
     expected_concept_names = tuple(c.name for c in DOC_01_EXPECTED.concepts)
     assert result.concepts == expected_concept_names
-
 
 async def test_extract_concepts_pass_with_golden_fixture_doc_07_sparse() -> None:
     """Golden fixture replay: doc_07_sparse — pass returns single concept, empty glossary."""

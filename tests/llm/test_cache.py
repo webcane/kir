@@ -1,11 +1,8 @@
 """Unit tests for LLM cache layer — LLMCacheKey, LLMCache, InMemoryCache (LLM-02)."""
 
-from __future__ import annotations
-
 import pytest
 
 from kir.llm.cache import InMemoryCache, LLMCache, LLMCacheKey
-
 
 class TestLLMCacheKey:
     def test_build_returns_colon_delimited_key(self) -> None:
@@ -33,7 +30,6 @@ class TestLLMCacheKey:
     def test_none_cache_key_component_raises(self) -> None:
         with pytest.raises((ValueError, TypeError)):
             LLMCacheKey().build(None, "extract_v1", "1", "fake:v0")  # type: ignore[arg-type]
-
 
 class TestLLMCache:
     def test_llm_cache_miss_returns_none(self) -> None:

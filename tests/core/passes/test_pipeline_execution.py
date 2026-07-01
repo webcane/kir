@@ -7,8 +7,6 @@
 - CompilerContext + fake ports + fake passes compose end-to-end.
 """
 
-from __future__ import annotations
-
 from kir.core.domain.ir import FakeIR
 from kir.core.domain.models.diagnostic import Diagnostic
 from kir.core.passes.context import CompilerContext
@@ -17,7 +15,6 @@ from tests.core.passes.fakes.fake_llm_port import FakeLLMPort
 from tests.core.passes.fakes.fake_parser import FakeMarkdownParser
 from tests.core.passes.fakes.fake_passes import fake_pass_a, fake_pass_b
 from tests.core.passes.fakes.fake_repository import InMemoryFakeRepository
-
 
 def test_pipeline_executes_passes_in_dependency_order_and_accumulates_diagnostics(
     fake_registry: PassRegistry, fake_compiler_context: CompilerContext
@@ -32,7 +29,6 @@ def test_pipeline_executes_passes_in_dependency_order_and_accumulates_diagnostic
     codes = {d.code for d in result.diagnostics}
     assert "FAKE_A" in codes
     assert "FAKE_B" in codes
-
 
 def test_rerun_produces_byte_identical_output(
     fake_registry: PassRegistry, fake_compiler_context: CompilerContext
@@ -49,7 +45,6 @@ def test_rerun_produces_byte_identical_output(
 
     assert result_1.model_dump_json() == result_2.model_dump_json()
 
-
 def test_all_diagnostics_are_structured_not_printed(
     fake_registry: PassRegistry, fake_compiler_context: CompilerContext, capsys
 ) -> None:
@@ -63,7 +58,6 @@ def test_all_diagnostics_are_structured_not_printed(
     assert captured.out == ""
     assert captured.err == ""
 
-
 async def test_fake_ports_construct_with_no_arguments_and_are_callable() -> None:
     llm = FakeLLMPort()
     repository = InMemoryFakeRepository()
@@ -75,7 +69,6 @@ async def test_fake_ports_construct_with_no_arguments_and_are_callable() -> None
     repository.save("artifact-1", {"id": "artifact-1"})
     assert repository.load("artifact-1") == {"id": "artifact-1"}
     assert isinstance(parser.parse("# heading"), list)
-
 
 def test_fake_compiler_context_composes_with_fake_pass(
     fake_compiler_context: CompilerContext,

@@ -5,8 +5,6 @@ LLMCache(InMemoryCache()), and PromptRegistry() — needed by extraction
 pass unit tests and DocumentCompiler integration tests.
 """
 
-from __future__ import annotations
-
 import pytest
 
 from kir.compiler.documents.adapters.markdown_it_adapter import MarkdownItAdapter
@@ -17,7 +15,6 @@ from kir.llm.fake_adapter import FakeLLMAdapter
 from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput
 from kir.llm.prompts.registry import PromptRegistry
 from tests.core.passes.fakes.fake_repository import InMemoryFakeRepository
-
 
 def make_phase2_context(
     fake_output: DocumentExtractionOutput | None = None,
@@ -49,7 +46,6 @@ def make_phase2_context(
         prompts=PromptRegistry(),
     )
 
-
 class _ErrorFakeLLMAdapter:
     """FakeLLMAdapter variant that raises a configured exception on extract()."""
 
@@ -66,7 +62,6 @@ class _ErrorFakeLLMAdapter:
     @property
     def call_count(self) -> int:
         return self._call_count
-
 
 @pytest.fixture
 def phase2_context() -> CompilerContext:
