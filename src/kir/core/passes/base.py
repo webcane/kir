@@ -6,12 +6,7 @@ plain functions or callables decorated to attach `name`/`depends_on`
 attributes (see `PassRegistry`).
 """
 
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Protocol
-
-if TYPE_CHECKING:
-    from kir.core.passes.context import CompilerContext
+from typing import Protocol
 
 
 class Pass(Protocol):

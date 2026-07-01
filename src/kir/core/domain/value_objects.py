@@ -6,7 +6,6 @@ two import paths for the same type — import `SourceRef` from
 `kir.core.domain.models.provenance` directly.
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 

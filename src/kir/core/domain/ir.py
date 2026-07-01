@@ -2,7 +2,6 @@
 pass-mechanics tests. Deliberately decoupled from Document/Concept schema —
 never used by real Document/Concept tests."""
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 

@@ -5,7 +5,6 @@ only starting in Phase 2; here they are typed placeholders so the entity
 shape exists per CORE-01.
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 

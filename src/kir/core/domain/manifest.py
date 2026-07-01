@@ -4,7 +4,6 @@ No checksum field, no dependency-index field — those are later Artifact
 System milestones (see PROJECT.md's cross-cutting "Artifact System" thread).
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 

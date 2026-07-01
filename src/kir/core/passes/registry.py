@@ -8,7 +8,6 @@ full dependency graph, at build time, raising a clearly named error
 missing pass or the cycle members.
 """
 
-from __future__ import annotations
 
 from graphlib import CycleError, TopologicalSorter
 

@@ -1,6 +1,5 @@
 """Structured diagnostics accumulated by compiler passes (CORE-06)."""
 
-from __future__ import annotations
 
 from enum import Enum
 

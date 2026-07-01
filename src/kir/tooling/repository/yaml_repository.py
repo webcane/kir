@@ -13,7 +13,6 @@ is used explicitly (not the default round-trip mode) to restrict
 deserialization to plain Python types.
 """
 
-from __future__ import annotations
 
 import re
 from pathlib import Path

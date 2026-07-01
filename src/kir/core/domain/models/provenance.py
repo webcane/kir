@@ -4,7 +4,6 @@ Canonical home for `SourceRef`. Do not redefine `SourceRef` elsewhere;
 import it from this module.
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 

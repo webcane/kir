@@ -5,7 +5,6 @@
 finalized in Phase 3/M2, not hardcoded as an enum here.
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 

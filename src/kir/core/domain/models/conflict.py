@@ -4,7 +4,6 @@ Kept intentionally minimal — CONF-01..03's full conflict modeling is M2
 scope. This phase only needs the type to exist per CORE-01's entity list.
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict
 
