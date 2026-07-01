@@ -50,11 +50,17 @@ KIR's full v1 scope is delivered across three milestones. This is the long-lived
 
 | Milestone | Delivers | Phases (when active) |
 |-----------|----------|----------------------|
-| **M1 — Deterministic Document Compiler** (current) | Domain model, ports, pass-registry mechanics, and a working Markdown → Document IR pipeline (deterministic passes + one LLM-backed extraction pass) | Phase 1: Compiler Foundation, Phase 2: Document Compiler |
-| **M2 — Canonical Knowledge Compiler** | Multi-document merge: aliases, canonical concepts, relations, taxonomy, conflict detection; full pipeline proven correct on tiered reference corpora | Phase 3: Knowledge Compiler, Phase 4: Validation |
+| **M1 — Deterministic Document Compiler** ✅ shipped v1.0 (2026-07-01) | Domain model, ports, pass-registry mechanics, and a working Markdown → Document IR pipeline (deterministic passes + one LLM-backed extraction pass) | Phase 1: Compiler Foundation, Phase 2: Document Compiler, Phase 2.1: Close gap STOR-01/STOR-02 |
+| **M2 — Canonical Knowledge Compiler** (current) | Multi-document merge: aliases, canonical concepts, relations, taxonomy, conflict detection; full pipeline proven correct on tiered reference corpora | Phase 3: Knowledge Compiler, Phase 4: Validation |
 | **M3 — Production Semantic Compiler** | Incremental compilation, `kir compile` CLI, real-corpus acceptance | Phase 5: Incremental Compilation, Phase 6: CLI & Real-Corpus Acceptance |
 
-**How this works:** ROADMAP.md currently contains only M1's phases (1–2) in full planning detail. M2 and M3 are intentionally *not* detailed in ROADMAP.md yet. When M1 completes (via `/gsd-complete-milestone`), ROADMAP.md is rewritten for M2's phases (3–4), and so on. The full set of v1 requirements is already defined in REQUIREMENTS.md (split into M1/M2/M3 sections) so nothing is lost — only the detailed phase/plan breakdown for M2/M3 is deferred until its milestone becomes current.
+**How this works:** ROADMAP.md currently contains only the current milestone's phases in full planning detail — see [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md) for M1's archived phase detail. M3 is intentionally *not* detailed in ROADMAP.md yet. When M2 completes (via `/gsd-complete-milestone`), ROADMAP.md is rewritten for M3's phases (5–6). The full set of v1 requirements was defined in REQUIREMENTS.md (split into M1/M2/M3 sections); M1's requirements are archived at [milestones/v1.0-REQUIREMENTS.md](milestones/v1.0-REQUIREMENTS.md), and a fresh REQUIREMENTS.md is created via `/gsd-new-milestone` for M2.
+
+## Current State (after v1.0)
+
+Shipped 2026-07-01: a working Markdown → Document IR pipeline. `src/kir/core` holds a Pydantic domain model (Document/Concept/Relation/Taxonomy/Conflict + value objects) with zero LLM/filesystem/YAML imports, behind four typed Protocol ports. A `graphlib`-based `PassRegistry` resolves pass execution order from declared dependencies; four registered passes (Parse, Section, Metadata, ExtractConcepts) compile a single Markdown file into a self-contained Document IR, including an async LLM-backed extraction pass (PydanticAI adapter, swappable via `LLMPort`, response caching keyed on checksum+prompt+schema+model). `DocumentCompiler.compile()` persists every result through `RepositoryPort` to a `YamlFileRepository` (one YAML file per artifact). 123 tests pass, 0 live LLM calls in CI.
+
+**Known tech debt (non-blocking, see [milestones/v1.0-MILESTONE-AUDIT.md](milestones/v1.0-MILESTONE-AUDIT.md)):** style-guide violations (`from __future__ import annotations` / `TYPE_CHECKING` in 4 source files + test files — audited in `.planning/todos/completed/audit-codebase-against-style-guide.md`, remediation not yet scheduled), no repository-level guard for `output_dir != source_dir` (STOR-02 is caller-enforced only), `CycleError` re-raise loses structured cycle-node-list, no empty-string validation on identifier value objects.
 
 ## Architecture & Workstreams
 
@@ -112,4 +118,4 @@ Decisions already made, not pending evaluation:
 - LLM passes tested via recorded/mocked responses, not live API calls — fast, repeatable, free CI; determinism requirement makes live-API tests unreliable anyway
 
 ---
-*Last updated: 2026-06-29 after restructuring per user feedback: renamed "What This Is" to "Product Definition," added Architecture Principles and Product Boundary diagram, moved Requirements to a pointer at REQUIREMENTS.md (removing the duplicate Active/Validated/Out-of-Scope lists), renamed Key Decisions to Architectural Decisions (dropped the Outcome/Pending column — these are decisions, not open questions), moved the Slab corpus mention into a new Acceptance Corpus section, and moved the Evolution/process-instruction section to `.planning/PROCESS.md`.*
+*Last updated: 2026-07-01 after v1.0 milestone (M1 — Deterministic Document Compiler): marked M1 shipped and M2 current in the Milestones table, added a Current State section summarizing what v1.0 delivered and its known tech debt, linked to the archived milestones/v1.0-ROADMAP.md, milestones/v1.0-REQUIREMENTS.md, and milestones/v1.0-MILESTONE-AUDIT.md. Prior update: 2026-06-29 restructuring per user feedback (see git history for that entry's detail).*
