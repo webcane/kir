@@ -182,3 +182,125 @@ def test_document_compiler_pipeline_has_four_passes() -> None:
     )
     compiler = DocumentCompiler(document_registry, ctx)
     assert len(compiler._pipeline) == 4
+
+
+async def test_compile_persists_document_to_repository(tmp_path: pathlib.Path) -> None:
+    """STOR-01: compile() saves exactly one artifact to the repository with the expected keys."""
+    from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput, ExtractedConceptDTO
+
+    doc_text = (
+        "# Alpha Concept\n\n"
+        "Alpha is about the alpha concept. It describes alpha thoroughly.\n\n"
+        "## Alpha Details\n\nAlpha detail section with alpha-specific content."
+    )
+    doc_path = tmp_path / "alpha.md"
+    doc_path.write_text(doc_text, encoding="utf-8")
+
+    fake_output = DocumentExtractionOutput(
+        concepts=[ExtractedConceptDTO(name="alpha concept")],
+        glossary=[],
+        entities=[],
+        references=[],
+    )
+    repo = InMemoryFakeRepository()
+    adapter = FakeLLMAdapter(output=fake_output)
+    ctx = CompilerContext(
+        llm=adapter,
+        repository=repo,
+        parser=MarkdownItAdapter(),
+        compiler_version=compiler_version,
+        schema_version=schema_version,
+        prompt_version=prompt_version,
+        llm_cache=LLMCache(InMemoryCache()),
+        prompts=PromptRegistry(),
+    )
+    compiler = DocumentCompiler(document_registry, ctx)
+    await compiler.compile(doc_path)
+
+    assert len(repo._store) == 1
+    stored = list(repo._store.values())[0]
+    assert isinstance(stored, dict)
+    assert set(stored.keys()) >= {"id", "title", "source", "checksum", "language", "sections"}
+    assert stored["id"] and len(stored["id"]) > 0
+    assert stored["title"] and len(stored["title"]) > 0
+    # artifact_id key matches the document's id field
+    artifact_id = list(repo._store.keys())[0]
+    assert artifact_id == stored["id"]
+
+
+async def test_two_documents_produce_two_distinct_repository_entries(
+    tmp_path: pathlib.Path,
+) -> None:
+    """STOR-02: compiling two different Markdown files produces two separate, non-overlapping repository entries."""
+    from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput, ExtractedConceptDTO
+
+    doc_a_text = (
+        "# Document Alpha\n\n"
+        "Alpha is about the alpha concept. It describes alpha thoroughly.\n\n"
+        "## Alpha Details\n\nAlpha detail section with alpha-specific content."
+    )
+    doc_b_text = (
+        "# Document Beta\n\n"
+        "Beta is about the beta concept. It describes beta thoroughly.\n\n"
+        "## Beta Details\n\nBeta detail section with beta-specific content."
+    )
+
+    output_a = DocumentExtractionOutput(
+        concepts=[ExtractedConceptDTO(name="alpha concept")],
+        glossary=[],
+        entities=[],
+        references=[],
+    )
+    output_b = DocumentExtractionOutput(
+        concepts=[ExtractedConceptDTO(name="beta concept")],
+        glossary=[],
+        entities=[],
+        references=[],
+    )
+
+    doc_a_path = tmp_path / "doc_a.md"
+    doc_b_path = tmp_path / "doc_b.md"
+    doc_a_path.write_text(doc_a_text, encoding="utf-8")
+    doc_b_path.write_text(doc_b_text, encoding="utf-8")
+
+    repo_a = InMemoryFakeRepository()
+    adapter_a = FakeLLMAdapter(output=output_a)
+    ctx_a = CompilerContext(
+        llm=adapter_a,
+        repository=repo_a,
+        parser=MarkdownItAdapter(),
+        compiler_version=compiler_version,
+        schema_version=schema_version,
+        prompt_version=prompt_version,
+        llm_cache=LLMCache(InMemoryCache()),
+        prompts=PromptRegistry(),
+    )
+    compiler_a = DocumentCompiler(document_registry, ctx_a)
+
+    repo_b = InMemoryFakeRepository()
+    adapter_b = FakeLLMAdapter(output=output_b)
+    ctx_b = CompilerContext(
+        llm=adapter_b,
+        repository=repo_b,
+        parser=MarkdownItAdapter(),
+        compiler_version=compiler_version,
+        schema_version=schema_version,
+        prompt_version=prompt_version,
+        llm_cache=LLMCache(InMemoryCache()),
+        prompts=PromptRegistry(),
+    )
+    compiler_b = DocumentCompiler(document_registry, ctx_b)
+
+    await compiler_a.compile(doc_a_path)
+    await compiler_b.compile(doc_b_path)
+
+    assert len(repo_a._store) == 1
+    assert len(repo_b._store) == 1
+
+    key_a = list(repo_a._store.keys())[0]
+    key_b = list(repo_b._store.keys())[0]
+    assert key_a != key_b
+
+    title_a = list(repo_a._store.values())[0]["title"]
+    title_b = list(repo_b._store.values())[0]["title"]
+    assert title_a != title_b
