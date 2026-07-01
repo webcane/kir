@@ -81,4 +81,5 @@ class DocumentCompiler:
             else:
                 ir = pass_fn(ir, self._ctx)
 
+        self._ctx.repository.save(ir.id, ir.model_dump())
         return ir
