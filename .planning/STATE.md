@@ -17,11 +17,11 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-29)
+See: .planning/PROJECT.md (updated 2026-07-01)
 
 **Core value:** Given identical raw sources, compiler version, prompt version, and schema version, KIR must deterministically compile raw Markdown into a canonical Knowledge IR that merges concepts/relations/taxonomy across documents, preserves full provenance, and explicitly records (never silently resolves) semantic conflicts.
-**Current milestone:** M1 — Deterministic Document Compiler (Phases 1-2 of 6 total v1 phases; M2/M3 already scoped in PROJECT.md ## Milestones, not yet detail-planned)
-**Current focus:** M1 COMPLETE — awaiting next milestone or phase planning
+**Current milestone:** M1 shipped as v1.0 (2026-07-01). M2 — Canonical Knowledge Compiler is next (not yet detail-planned; scoped in PROJECT.md ## Milestones).
+**Current focus:** Awaiting `/gsd-new-milestone` to start M2 requirements/roadmap
 
 ## Current Position
 
