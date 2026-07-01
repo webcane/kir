@@ -18,6 +18,7 @@ from kir.core.passes.context import CompilerContext
 from kir.llm.cache import InMemoryCache, LLMCache
 from kir.llm.fake_adapter import FakeLLMAdapter
 from kir.llm.prompts.registry import PromptRegistry
+from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput, ExtractedConceptDTO
 from tests.compiler.documents.fixtures.extract_concepts.expected_outputs import (
     DOC_01_EXPECTED,
 )
@@ -108,11 +109,6 @@ async def test_no_cross_contamination(tmp_path: pathlib.Path) -> None:
         "## Beta Details\n\nBeta detail section with beta-specific content."
     )
 
-    from kir.llm.pydantic_ai_adapter import (
-        DocumentExtractionOutput,
-        ExtractedConceptDTO,
-    )
-
     output_a = DocumentExtractionOutput(
         concepts=[ExtractedConceptDTO(name="alpha concept")],
         glossary=[],
@@ -162,8 +158,6 @@ async def test_no_cross_contamination(tmp_path: pathlib.Path) -> None:
 def test_document_compiler_pipeline_has_four_passes() -> None:
     """DocumentCompiler._pipeline contains exactly 4 passes (parse, section, metadata, extract_concepts)."""
     # Build directly to access _pipeline
-    from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput
-
     adapter = FakeLLMAdapter(output=DocumentExtractionOutput())
     ctx = CompilerContext(
         llm=adapter,
@@ -181,8 +175,6 @@ def test_document_compiler_pipeline_has_four_passes() -> None:
 
 async def test_compile_persists_document_to_repository(tmp_path: pathlib.Path) -> None:
     """STOR-01: compile() saves exactly one artifact to the repository with the expected keys."""
-    from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput, ExtractedConceptDTO
-
     doc_text = (
         "# Alpha Concept\n\n"
         "Alpha is about the alpha concept. It describes alpha thoroughly.\n\n"
@@ -227,8 +219,6 @@ async def test_two_documents_produce_two_distinct_repository_entries(
     tmp_path: pathlib.Path,
 ) -> None:
     """STOR-02: compiling two different Markdown files produces two separate, non-overlapping repository entries."""
-    from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput, ExtractedConceptDTO
-
     doc_a_text = (
         "# Document Alpha\n\n"
         "Alpha is about the alpha concept. It describes alpha thoroughly.\n\n"
