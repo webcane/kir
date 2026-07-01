@@ -40,6 +40,7 @@ A pass or feature is done when it is: deterministic, independently tested, repro
 - `.planning/research/SUMMARY.md` — research summary
 - `.planning/research/FEATURES.md` — feature research
 - `.planning/research/STACK.md` — technology stack research and rationale
+- `.planning/STYLE_GUIDE.md` — Python coding rules: type hints, import order, Pydantic models, pass design, testing
 
 <!-- GSD:skills-start source:skills/ -->
 
