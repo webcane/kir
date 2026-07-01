@@ -16,7 +16,6 @@ Async passes (extract_concepts_pass) are dispatched with await; sync passes
 is made at runtime via asyncio.iscoroutinefunction().
 """
 
-from __future__ import annotations
 
 import asyncio
 from pathlib import Path

@@ -6,7 +6,6 @@ Satisfies LLMPort structurally: exposes model_id: str and
 async extract(*, sections, prompt) -> DocumentExtractionOutput.
 """
 
-from __future__ import annotations
 
 from kir.llm.pydantic_ai_adapter import DocumentExtractionOutput
 

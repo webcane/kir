@@ -5,7 +5,6 @@ parser adapter (MarkdownItAdapter in production, FakeMarkdownParser in tests).
 The pass never imports markdown_it directly — it interacts only via the port.
 """
 
-from __future__ import annotations
 
 from kir.core.domain.models.document import Document
 from kir.core.passes.context import CompilerContext

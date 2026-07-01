@@ -9,7 +9,6 @@ File-based persistence (SQLite, shelve) is Phase 5 scope per RESEARCH.md
 Pattern 7 — in-memory is sufficient for single-run correctness.
 """
 
-from __future__ import annotations
 
 from kir.core.ports.cache_port import CachePort
 

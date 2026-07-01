@@ -9,7 +9,6 @@ returning concepts, glossary terms, entities, and references together as a
 single validated Pydantic model (DocumentExtractionOutput).
 """
 
-from __future__ import annotations
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic_ai import Agent, ModelRetry

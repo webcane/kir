@@ -6,7 +6,6 @@ and sets language='en'. Depends on parse and section so sections are normalised
 before title derivation.
 """
 
-from __future__ import annotations
 
 import hashlib
 import re

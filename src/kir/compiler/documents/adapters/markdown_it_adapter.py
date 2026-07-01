@@ -8,7 +8,6 @@ Per the Phase 2 threat register (T-02-06): no other file in kir.compiler or kir.
 may import markdown_it. The acceptance_criteria grep gate enforces this at CI time.
 """
 
-from __future__ import annotations
 
 from markdown_it import MarkdownIt
 

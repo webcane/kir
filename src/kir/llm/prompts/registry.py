@@ -12,7 +12,6 @@ prompt content = rename/add a file + bump the prompt_version constant in
 core/config/versions.py.
 """
 
-from __future__ import annotations
 
 from pathlib import Path
 

@@ -8,12 +8,9 @@ without importing from the llm/ package (Anti-Pattern 4: no llm/ imports in
 domain/ or passes/).
 """
 
-from __future__ import annotations
+from typing import Protocol
 
-from typing import TYPE_CHECKING, Protocol
-
-if TYPE_CHECKING:
-    from kir.core.domain.models.document import Section
+from kir.core.domain.models.document import Section
 
 
 class ExtractionResult(Protocol):

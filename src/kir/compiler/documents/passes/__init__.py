@@ -9,7 +9,6 @@ The forced imports at the bottom of this module ensure decorator registration fi
 regardless of test collection order (per RESEARCH.md Pitfall 3 — import order).
 """
 
-from __future__ import annotations
 
 from kir.core.passes.registry import PassRegistry
 

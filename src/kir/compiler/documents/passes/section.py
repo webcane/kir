@@ -4,7 +4,6 @@ This is a pure normalization pass that does not change headings or add/remove
 sections. It depends on parse (sections must be populated first).
 """
 
-from __future__ import annotations
 
 from kir.core.domain.models.document import Document, Section
 from kir.core.passes.context import CompilerContext
