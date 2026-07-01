@@ -1,6 +1,6 @@
 # kir
 
-KIR is a semantic compiler implementing a Knowledge ETL pipeline: it compiles raw Markdown corpora into a canonical Knowledge IR.
+KIR is a semantic compiler implementing a Knowledge ETL pipeline: it compiles raw sources — starting with Markdown — into a canonical Knowledge IR.
 
 ## Use Cases
 
@@ -29,4 +29,4 @@ LLVM is a compiler backend that many languages and tools build on top of, withou
 
 - Kir is **not** for end users — it does not produce a browsable or queryable product; it outputs raw, structured IR.
 - Kir **is** for developers building their own knowledge platforms, tools, or agents on top of that IR.
-- Kir's job is to solve the "raw data" problem: compiling messy, inconsistent Markdown into a strict, machine-readable, versioned Knowledge IR that downstream tools can rely on without re-deriving structure themselves.
+- Kir's job is to solve the "raw data" problem: compiling messy, inconsistent raw sources — starting with Markdown — into a strict, machine-readable, versioned Knowledge IR that downstream tools can rely on without re-deriving structure themselves.
