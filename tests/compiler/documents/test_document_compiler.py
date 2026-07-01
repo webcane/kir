@@ -9,8 +9,6 @@ All tests use FakeLLMAdapter — zero live API calls.
 asyncio_mode="auto" is configured globally so no @pytest.mark.asyncio needed.
 """
 
-from __future__ import annotations
-
 import pathlib
 
 import pytest
