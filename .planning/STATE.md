@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: Phase 02 shipped — tag phase-02 on master
 stopped_at: Phase 2 context gathered
-last_updated: "2026-07-01T08:44:04.310Z"
-last_activity: 2026-07-01
+last_updated: "2026-07-01T09:24:06.505Z"
+last_activity: 2026-07-01 -- Phase 02.1 planning complete
 progress:
-  total_phases: 2
+  total_phases: 3
   completed_phases: 2
   total_plans: 9
   completed_plans: 9
-  percent: 100
+  percent: 67
 ---
 
 # Project State
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 Phase: 02 (document-compiler) — COMPLETE (verified 2026-07-01)
 Milestone: M1 (Phases 1-2) — COMPLETE
 Status: Phase 02 shipped — tag phase-02 on master
-Last activity: 2026-07-01
+Last activity: 2026-07-01 -- Phase 02.1 planning complete
 
 Progress: [██████████] 100%
 
@@ -60,6 +60,10 @@ Progress: [██████████] 100%
 | Phase 02-document-compiler P04b | 5min | 2 tasks | 15 files |
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 02.1 inserted after Phase 2: Close gap: STOR-01/STOR-02 — wire DocumentCompiler to RepositoryPort for artifact persistence (URGENT)
 
 ### Decisions
 
