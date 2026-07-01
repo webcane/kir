@@ -28,9 +28,14 @@ from kir.compiler.documents.passes import register_pass
 def _sections_to_text(sections: tuple[Section, ...]) -> str:
     """Render sections as readable Markdown text for the extraction prompt.
 
-    Each section is rendered as its heading (if any) followed by its content,
-    separated by blank lines. This produces the readable document text the LLM
-    expects — not Python object repr.
+    Concatenates sections with headings (if present) and content, separated
+    by blank lines. Produces human-readable document text for the LLM.
+
+    Args:
+        sections: Tuple of Section objects (heading + content pairs).
+
+    Returns:
+        String containing all sections formatted as readable Markdown.
     """
     parts: list[str] = []
     for s in sections:
@@ -75,29 +80,20 @@ def _apply_extraction(ir: Document, result: object) -> Document:
 
 @register_pass("extract_concepts", depends_on=("parse", "section", "metadata"))
 async def extract_concepts_pass(ir: Document, ctx: CompilerContext) -> Document:
-    """Async LLM-backed extraction pass — populates concepts, glossary, entities, references.
+    """Extract concepts, glossary, entities, and references via LLM.
 
-    Steps:
-    1. Render extraction prompt via ctx.prompts.render().
-    2. Check LLM cache (ctx.llm_cache) — return cached result immediately on a hit.
-    3. Call ctx.llm.extract() — on failure write a Diagnostic (D-03) and return.
-    4. Write the fresh result to the cache.
-    5. Apply the extraction to the Document IR via _apply_extraction().
-
-    If ctx.prompts or ctx.llm_cache is None (not configured), the pass returns
-    the Document unmodified rather than crashing — callers that need extraction
-    must supply both via CompilerContext.
+    Performs structured LLM-backed extraction with cache lookup, failure
+    recovery (D-03), and graceful degradation if extraction is not configured.
 
     Args:
-        ir: Document IR (sections, checksum, id, title already populated by
-            parse/section/metadata passes).
+        ir: Document IR with sections, checksum, id, and title pre-populated.
         ctx: CompilerContext carrying llm, llm_cache, prompts, prompt_version,
-             schema_version.
+             and schema_version.
 
     Returns:
-        An immutable Document copy with concepts/glossary/entities/references
-        populated, or with a Diagnostic appended if LLM extraction failed,
-        or unmodified if prompts/llm_cache are not configured.
+        Immutable Document copy with concepts/glossary/entities/references
+        populated on success, with a Diagnostic appended on LLM failure, or
+        unmodified if prompts/llm_cache are unconfigured.
     """
     # Guard: skip gracefully if Phase 2 deps are not wired in the context
     if ctx.prompts is None or ctx.llm_cache is None:

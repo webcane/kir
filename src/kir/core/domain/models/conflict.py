@@ -11,6 +11,12 @@ from kir.core.domain.value_objects import ConceptId
 
 
 class Conflict(BaseModel):
+    """Semantic conflict or contradiction between concepts.
+
+    Records conflicts, inconsistencies, or contradictions detected among concepts.
+    Full conflict modeling and resolution is Phase 3/M2 scope.
+    """
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     id: str

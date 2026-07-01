@@ -7,6 +7,12 @@ from pydantic import BaseModel, ConfigDict
 
 
 class Severity(str, Enum):
+    """Severity level for a diagnostic message.
+
+    Classifies diagnostics by their impact: error (pipeline concern),
+    warning (worth investigating), or info (advisory).
+    """
+
     ERROR = "error"
     WARNING = "warning"
     INFO = "info"

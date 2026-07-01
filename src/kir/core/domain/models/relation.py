@@ -13,6 +13,12 @@ from kir.core.domain.value_objects import ConceptId, RelationId
 
 
 class Relation(BaseModel):
+    """Semantic relation between two concepts.
+
+    Represents a directed relationship (edge) between a source and target
+    concept, typed by relation_type (to be enumerated in Phase 3/M2).
+    """
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     id: RelationId

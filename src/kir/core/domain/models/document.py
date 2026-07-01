@@ -13,6 +13,11 @@ from kir.core.domain.value_objects import Checksum
 
 
 class Section(BaseModel):
+    """Logical section of a document with optional heading and content.
+
+    Represents a subdivision of a document as parsed by the MarkdownParserPort.
+    """
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     heading: str
@@ -20,6 +25,13 @@ class Section(BaseModel):
 
 
 class Document(BaseModel):
+    """Document IR — root container for parsed and annotated document content.
+
+    Holds the raw source, checksums, logical sections, and placeholder tuples
+    for extracted concepts, glossary, entities, and references (populated in
+    Phase 2/M1-extended by extraction passes).
+    """
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     id: str

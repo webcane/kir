@@ -14,13 +14,17 @@ from kir.compiler.documents.passes import register_pass
 
 @register_pass("parse")
 def parse_pass(ir: Document, ctx: CompilerContext) -> Document:
-    """Populate Document.sections from the parser adapter.
+    """Parse document source into logical sections.
 
-    Calls ctx.parser.parse(ir.source) — the MarkdownParserPort call. The
-    adapter (MarkdownItAdapter or a test fake) handles the actual parsing.
-    Returns an immutable copy of ir with sections populated.
+    Calls the MarkdownParserPort to decompose the raw source into a sequence
+    of Section objects (heading + content pairs).
 
-    No LLM calls. No direct import of MarkdownItAdapter.
+    Args:
+        ir: Document IR with source populated, sections empty.
+        ctx: CompilerContext providing the MarkdownParserPort.
+
+    Returns:
+        Immutable Document copy with sections populated from parsing.
     """
     sections = ctx.parser.parse(ir.source)
     return ir.model_copy(update={"sections": tuple(sections)})

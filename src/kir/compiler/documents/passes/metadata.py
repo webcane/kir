@@ -33,15 +33,19 @@ def _slugify(title: str) -> str:
 
 @register_pass("metadata", depends_on=("parse", "section"))
 def metadata_pass(ir: Document, ctx: CompilerContext) -> Document:
-    """Populate id, title, checksum, and language on the Document IR.
+    """Populate document metadata: id, title, checksum, and language.
 
-    - checksum: SHA-256 hex digest of ir.source (encoded as UTF-8).
-    - title: heading of the first section with a non-empty heading, or 'Untitled'.
-    - id: URL-safe slug of title (lowercase, spaces → hyphens, strip non-alnum).
-    - language: always 'en' for this phase (multi-language detection is out of scope).
+    Derives title from the first non-empty section heading, computes SHA-256
+    checksum of the source, slugifies title to produce document id, and sets
+    language to 'en' (multi-language detection is out of scope).
 
-    Source stays unchanged (already in ir.source from initial Document construction).
-    Returns an immutable copy of ir with the four fields populated.
+    Args:
+        ir: Document IR with sections normalized by section pass.
+        ctx: CompilerContext (not used by this pass).
+
+    Returns:
+        Immutable Document copy with id, title, checksum, and language fields
+        populated.
     """
     checksum_hex = hashlib.sha256(ir.source.encode()).hexdigest()
 

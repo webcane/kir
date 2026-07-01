@@ -22,6 +22,14 @@ from kir.core.ports.repository_port import RepositoryPort
 
 @dataclass(frozen=True, slots=True)
 class CompilerContext:
+    """Immutable dependency-injection container for compiler passes.
+
+    Provides access to domain-owned ports (LLM, repository, parser) and
+    run metadata (versions). Never a module-level global; explicitly threaded
+    through the pipeline. Frozen dataclass (not Pydantic) to avoid validation
+    overhead for Protocol-typed port fields.
+    """
+
     llm: LLMPort
     repository: RepositoryPort
     parser: MarkdownParserPort

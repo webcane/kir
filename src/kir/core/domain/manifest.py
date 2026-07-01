@@ -9,6 +9,12 @@ from pydantic import BaseModel, ConfigDict
 
 
 class ArtifactManifest(BaseModel):
+    """Metadata for a compiled artifact: id and version.
+
+    Phase 1 scope includes only id and version; extended fields
+    (checksum, dependencies) are Phase 2/3 scope (see PROJECT.md).
+    """
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     artifact_id: str

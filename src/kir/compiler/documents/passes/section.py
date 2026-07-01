@@ -13,12 +13,17 @@ from kir.compiler.documents.passes import register_pass
 
 @register_pass("section", depends_on=("parse",))
 def section_pass(ir: Document, ctx: CompilerContext) -> Document:
-    """Normalize section content — strip leading/trailing whitespace.
+    """Normalize section content by stripping whitespace.
 
-    Iterates over ir.sections and strips each Section's content.
-    Returns an immutable copy of ir with normalized sections.
+    Trims leading and trailing whitespace from each section's content.
+    Headings and section count remain unchanged.
 
-    This pass does not modify headings or change the number of sections.
+    Args:
+        ir: Document IR with sections populated by parse pass.
+        ctx: CompilerContext (not used by this pass).
+
+    Returns:
+        Immutable Document copy with normalized (whitespace-stripped) sections.
     """
     normalized = tuple(
         Section(heading=s.heading, content=s.content.strip()) for s in ir.sections

@@ -8,6 +8,12 @@ from kir.core.domain.value_objects import ConceptId
 
 
 class Concept(BaseModel):
+    """Semantic concept entity with identity, definition, and provenance.
+
+    Represents a named concept extracted from source documents, with optional
+    definition, category, and source lineage.
+    """
+
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     id: ConceptId

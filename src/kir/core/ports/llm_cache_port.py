@@ -12,6 +12,12 @@ from typing import Protocol
 
 
 class LLMCachePort(Protocol):
+    """Semantic cache port for LLM extraction results.
+
+    Uses a four-component key (checksum + prompt_version + schema_version + model_id)
+    to enable cache hits across document changes and model updates.
+    """
+
     def get(
         self,
         *,
@@ -19,7 +25,19 @@ class LLMCachePort(Protocol):
         prompt_version: str,
         schema_version: str,
         model_id: str,
-    ) -> object | None: ...
+    ) -> object | None:
+        """Retrieve cached extraction result by composite key.
+
+        Args:
+            checksum: SHA-256 checksum of the document source.
+            prompt_version: Version identifier for the extraction prompt.
+            schema_version: Version identifier for the extraction schema.
+            model_id: Model identifier (e.g., "gpt-4o-2024-11-20").
+
+        Returns:
+            Cached extraction result if key matches, None otherwise.
+        """
+        ...
 
     def set(
         self,
@@ -29,4 +47,14 @@ class LLMCachePort(Protocol):
         schema_version: str,
         model_id: str,
         value: object,
-    ) -> None: ...
+    ) -> None:
+        """Store extraction result in cache by composite key.
+
+        Args:
+            checksum: SHA-256 checksum of the document source.
+            prompt_version: Version identifier for the extraction prompt.
+            schema_version: Version identifier for the extraction schema.
+            model_id: Model identifier (e.g., "gpt-4o-2024-11-20").
+            value: Extraction result to cache (ExtractionResult).
+        """
+        ...

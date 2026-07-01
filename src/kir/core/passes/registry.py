@@ -15,22 +15,58 @@ from kir.core.passes.base import Pass
 
 
 class MissingDependencyError(ValueError):
-    """Raised at pipeline() build time when a pass declares depends_on
-    naming a pass that was never registered. Per D-02, this is NOT
-    raised at register() time."""
+    """Raised when a pass references an unregistered dependency.
+
+    Raised at pipeline() build time (not at register() time) when a pass
+    declares depends_on naming a pass that was never registered (D-02).
+    """
 
 
 class PassRegistry:
+    """Registry for compiler passes with dependency-ordered pipeline construction.
+
+    Provides decorator-friendly registration and build-time topological sorting
+    of passes via graphlib.TopologicalSorter. Validation occurs only at
+    pipeline() build time, not at register() time, to accommodate import order.
+    """
+
     def __init__(self) -> None:
+        """Initialize an empty pass registry."""
         self._passes: dict[str, Pass] = {}
 
     def register(self, pass_obj: Pass) -> Pass:
+        """Register a pass for inclusion in the pipeline.
+
+        Does not validate depends_on at this point (D-02); validation occurs
+        only at pipeline() build time. Returns the pass unchanged for use as
+        a decorator.
+
+        Args:
+            pass_obj: Pass object with name and depends_on attributes.
+
+        Returns:
+            The same pass_obj, unchanged.
+        """
         # Registration itself never validates depends_on (D-02) —
         # import order may mean a dependency hasn't registered yet.
         self._passes[pass_obj.name] = pass_obj
         return pass_obj
 
     def pipeline(self) -> list[Pass]:
+        """Build a topologically-sorted pipeline of all registered passes.
+
+        Validates that all declared dependencies are registered and that no
+        cycles exist. Raises MissingDependencyError or CycleError on validation
+        failure.
+
+        Returns:
+            List of passes in dependency order (all transitive dependencies
+            resolved, ready for execution).
+
+        Raises:
+            MissingDependencyError: If a pass depends on an unregistered pass.
+            CycleError: If pass dependencies form a cycle.
+        """
         graph: dict[str, set[str]] = {}
         for name, p in self._passes.items():
             for dep in p.depends_on:

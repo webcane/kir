@@ -41,4 +41,14 @@ class LLMPort(Protocol):
         *,
         sections: list[Section],
         prompt: str,
-    ) -> ExtractionResult: ...
+    ) -> ExtractionResult:
+        """Extract concepts, glossary, entities, and references from sections.
+
+        Args:
+            sections: Document sections to extract from.
+            prompt: Rendering prompt instructing the LLM what to extract.
+
+        Returns:
+            ExtractionResult with concepts, glossary, entities, references lists.
+        """
+        ...

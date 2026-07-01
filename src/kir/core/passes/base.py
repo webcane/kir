@@ -10,7 +10,23 @@ from typing import Protocol
 
 
 class Pass(Protocol):
+    """Structural contract every compiler pass satisfies.
+
+    Passes can be plain functions or callables (no inheritance required);
+    attributes are attached via decorators or the registry mechanism.
+    """
+
     name: str
     depends_on: tuple[str, ...]
 
-    def __call__(self, ir: object, ctx: "CompilerContext") -> object: ...
+    def __call__(self, ir: object, ctx: "CompilerContext") -> object:
+        """Execute the pass on the input IR.
+
+        Args:
+            ir: Input IR to transform.
+            ctx: CompilerContext providing access to ports and metadata.
+
+        Returns:
+            Transformed IR (typically an immutable copy with fields updated).
+        """
+        ...
