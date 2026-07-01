@@ -15,16 +15,30 @@ code='extraction-failed' is appended to the IR, and the pass returns an
 otherwise-unmodified Document. The pipeline does NOT halt.
 
 Boundary rule: this file must NOT import from kir.llm — the LLM adapter is
-accessed exclusively via ctx.llm (LLMPort) and ctx.llm_cache (LLMCache).
+accessed exclusively via ctx.llm (LLMPort) and ctx.llm_cache (LLMCachePort).
 """
 
-from __future__ import annotations
-
 from kir.core.domain.models.diagnostic import Diagnostic, Severity
-from kir.core.domain.models.document import Document
+from kir.core.domain.models.document import Document, Section
 from kir.core.passes.context import CompilerContext
 
 from kir.compiler.documents.passes import register_pass
+
+
+def _sections_to_text(sections: tuple[Section, ...]) -> str:
+    """Render sections as readable Markdown text for the extraction prompt.
+
+    Each section is rendered as its heading (if any) followed by its content,
+    separated by blank lines. This produces the readable document text the LLM
+    expects — not Python object repr.
+    """
+    parts: list[str] = []
+    for s in sections:
+        if s.heading:
+            parts.append(f"## {s.heading}\n\n{s.content}")
+        else:
+            parts.append(s.content)
+    return "\n\n".join(parts)
 
 
 def _apply_extraction(ir: Document, result: object) -> Document:
@@ -70,6 +84,10 @@ async def extract_concepts_pass(ir: Document, ctx: CompilerContext) -> Document:
     4. Write the fresh result to the cache.
     5. Apply the extraction to the Document IR via _apply_extraction().
 
+    If ctx.prompts or ctx.llm_cache is None (not configured), the pass returns
+    the Document unmodified rather than crashing — callers that need extraction
+    must supply both via CompilerContext.
+
     Args:
         ir: Document IR (sections, checksum, id, title already populated by
             parse/section/metadata passes).
@@ -78,13 +96,19 @@ async def extract_concepts_pass(ir: Document, ctx: CompilerContext) -> Document:
 
     Returns:
         An immutable Document copy with concepts/glossary/entities/references
-        populated, or with a Diagnostic appended if LLM extraction failed.
+        populated, or with a Diagnostic appended if LLM extraction failed,
+        or unmodified if prompts/llm_cache are not configured.
     """
-    # Step 1: render prompt
-    prompt: str = ctx.prompts.render("extract_v1", sections=ir.sections)  # type: ignore[union-attr]
+    # Guard: skip gracefully if Phase 2 deps are not wired in the context
+    if ctx.prompts is None or ctx.llm_cache is None:
+        return ir
+
+    # Step 1: render prompt with readable section text (not Python repr)
+    sections_text = _sections_to_text(ir.sections)
+    prompt: str = ctx.prompts.render("extract_v1", sections=sections_text)
 
     # Step 2: cache check
-    cached = ctx.llm_cache.get(  # type: ignore[union-attr]
+    cached = ctx.llm_cache.get(
         checksum=ir.checksum.value,
         prompt_version=ctx.prompt_version,
         schema_version=ctx.schema_version,
@@ -111,7 +135,7 @@ async def extract_concepts_pass(ir: Document, ctx: CompilerContext) -> Document:
         )
 
     # Step 4: cache the result
-    ctx.llm_cache.set(  # type: ignore[union-attr]
+    ctx.llm_cache.set(
         checksum=ir.checksum.value,
         prompt_version=ctx.prompt_version,
         schema_version=ctx.schema_version,

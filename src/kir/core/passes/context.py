@@ -11,13 +11,12 @@ fields are not natively Pydantic-validatable without
 serialized — see 01-PATTERNS.md for the explicit rationale.
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass
 
-from kir.core.ports.cache_port import CachePort
+from kir.core.ports.llm_cache_port import LLMCachePort
 from kir.core.ports.llm_port import LLMPort
 from kir.core.ports.parser_port import MarkdownParserPort
+from kir.core.ports.prompt_registry_port import PromptRegistryPort
 from kir.core.ports.repository_port import RepositoryPort
 
 
@@ -30,5 +29,5 @@ class CompilerContext:
     schema_version: str
     # Phase 2 additions (all optional with defaults for backward compatibility):
     prompt_version: str = ""
-    llm_cache: CachePort | None = None
-    prompts: object = None
+    llm_cache: LLMCachePort | None = None
+    prompts: PromptRegistryPort | None = None
