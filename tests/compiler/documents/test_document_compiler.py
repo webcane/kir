@@ -11,8 +11,6 @@ asyncio_mode="auto" is configured globally so no @pytest.mark.asyncio needed.
 
 import pathlib
 
-import pytest
-
 from kir.compiler.documents.compiler import DocumentCompiler
 from kir.compiler.documents.passes import document_registry
 from kir.core.config.versions import compiler_version, prompt_version, schema_version
