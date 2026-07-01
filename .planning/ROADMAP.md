@@ -23,6 +23,7 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
 
 - [x] **Phase 1: Compiler Foundation** - Domain model, ports, CompilerContext, and pass-registry mechanics exist and are proven in isolation with fake passes, with zero LLM/filesystem/YAML imports in domain code (completed 2026-06-30)
 - [x] **Phase 2: Document Compiler** - Markdown sources compile into Document IR end-to-end, through deterministic passes and one LLM-backed extraction pass, with a fake adapter proving LLMPort is swappable (completed 2026-07-01)
+- [ ] **Phase 2.1: Close gap — STOR-01/STOR-02** - Wire DocumentCompiler to RepositoryPort for artifact persistence (INSERTED — urgent gap close)
 
 ## Phase Details
 
@@ -77,7 +78,20 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-04-PLAN.md — ExtractConceptsPass (async, D-03 failure, cache), DocumentCompiler service, 10 golden fixtures, extraction + integration tests (DOC-01, DOC-02, DOC-03, LLM-01, LLM-02, LLM-03)
+- [x] 02-04a-PLAN.md — ExtractConceptsPass (async, D-03 failure, cache) and DocumentCompiler service (DOC-01, DOC-02, DOC-03, LLM-01, LLM-02, LLM-03)
+- [x] 02-04b-PLAN.md — 10 golden fixtures, extraction + integration tests (DOC-01, DOC-02, DOC-03, LLM-02, LLM-03)
+
+### Phase 2.1: Close gap — STOR-01/STOR-02 (INSERTED)
+
+**Goal**: Wire DocumentCompiler to RepositoryPort so compiled Document IR artifacts are persisted through the repository port, closing the gap between Phase 1's STOR-01/STOR-02 fakes and Phase 2's DocumentCompiler service.
+**Depends on**: Phase 2
+**Requirements**: STOR-01, STOR-02
+
+**Plans:** 1 plan
+Plans:
+**Wave 1**
+
+- [ ] 02.1-01-PLAN.md — Wire repository.save() into DocumentCompiler.compile() and assert persistence in integration tests (STOR-01, STOR-02)
 
 ## Progress
 
@@ -85,3 +99,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Compiler Foundation | 4/4 | Complete    | 2026-06-30 |
 | 2. Document Compiler | 5/5 | Complete   | 2026-07-01 |
+| 2.1 Close gap STOR-01/STOR-02 | 0/1 | In progress | — |
