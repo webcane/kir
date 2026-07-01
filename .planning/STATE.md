@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: Phase 02 shipped — tag phase-02 on master
-last_updated: "2026-07-01T20:35:00.000Z"
-last_activity: 2026-07-01 - Completed quick task 260701-doc: fix todo - Add Google-style docstrings to all public APIs
+last_updated: "2026-07-01T20:53:00.000Z"
+last_activity: 2026-07-01 - Completed quick task 260701-syb: Fix README wording - markdown-only framing and "corpora" term
 progress:
   total_phases: 3
   completed_phases: 3
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-06-29)
 Phase: 02 (document-compiler) — COMPLETE (verified 2026-07-01)
 Milestone: M1 (Phases 1-2) — COMPLETE
 Status: Phase 02 shipped — tag phase-02 on master
-Last activity: 2026-07-01 - Completed quick task 260701-sh0: fix todo - Audit codebase against STYLE_GUIDE.md rules
+Last activity: 2026-07-01 - Completed quick task 260701-syb: Fix README wording - markdown-only framing and "corpora" term
 
 Progress: [██████████] 100%
 
@@ -91,7 +91,7 @@ Recent decisions affecting current work:
 
 1. ~~Add Google-style docstrings to all public APIs~~ ✓ (completed 2026-07-01)
 2. ~~Upgrade to Python 3.14 and finalize type-hint strategy~~ ✓ (completed 2026-07-01)
-3. Add use cases to README based on LLVM-for-knowledge analogy
+3. ~~Add use cases to README based on LLVM-for-knowledge analogy~~ ✓ (completed 2026-07-01)
 
 ### Blockers/Concerns
 
@@ -107,6 +107,8 @@ Recent decisions affecting current work:
 | 260629-edc | fix todo - Elevate Diagnostics and LLM cache to required Phase 1/2 mechanics in ARCHITECTURE.md | 2026-06-29 | 58688ff | [260629-edc-elevate-diagnostics-cache-to-required](./quick/260629-edc-elevate-diagnostics-cache-to-required/) |
 | 260701-sh0 | fix todo - Audit codebase against STYLE_GUIDE.md rules | 2026-07-01 | a9d992d | [260701-sh0-audit-codebase-against-style-guide-md](./quick/260701-sh0-audit-codebase-against-style-guide-md/) |
 | 260701-doc | fix todo - Add Google-style docstrings to all public APIs | 2026-07-01 | 81f3a31 | [20260701-add-docstrings-public-apis](./quick/20260701-add-docstrings-public-apis/) |
+| 260701-sox | Add use cases to README based on LLVM-for-knowledge analogy | 2026-07-01 | 5ae2e2c | [260701-sox-add-use-cases-to-readme-based-on-llvm-fo](./quick/260701-sox-add-use-cases-to-readme-based-on-llvm-fo/) |
+| 260701-syb | Fix README wording: markdown-only framing and "corpora" term | 2026-07-01 | e3d775c | [260701-syb-fix-readme-wording-markdown-is-only-the-](./quick/260701-syb-fix-readme-wording-markdown-is-only-the-/) |
 
 ## Deferred Items
 
@@ -114,11 +116,11 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| todo | Add use cases to README based on LLVM-for-knowledge analogy (`add-use-cases-to-readme-based-on-llvm-for-knowledge-analogy.md`) | completed via quick task `260701-sox-add-use-cases-to-readme-based-on-llvm-fo` | v1.0 close, 2026-07-01 |
 
 ## Session Continuity
 
-Last session: 2026-07-01T20:35:00.000Z
-Stopped at: Quick task 260701-doc complete
+Last session: 2026-07-01T20:53:00.000Z
+Stopped at: Quick task 260701-syb complete
 Resume file: None
-Last activity: 2026-07-01 - Completed quick task 260701-doc: fix todo - Add Google-style docstrings to all public APIs
+Last activity: 2026-07-01 - Completed quick task 260701-syb: Fix README wording - markdown-only framing and "corpora" term
