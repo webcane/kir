@@ -27,15 +27,15 @@ Requirements actively being planned/executed. Maps to phases in `.planning/ROADM
 
 ### Document Compiler
 
-- [ ] **DOC-01**: System parses a single Markdown source into Document IR (id, title, source, checksum, language, sections, concepts, glossary, entities, references)
-- [ ] **DOC-02**: Document IR for one document never merges information from another document
-- [ ] **DOC-03**: System extracts concept mentions, glossary terms, entities, and references from a parsed document via an LLM-backed pass returning validated structured output
+- [x] **DOC-01**: System parses a single Markdown source into Document IR (id, title, source, checksum, language, sections, concepts, glossary, entities, references)
+- [x] **DOC-02**: Document IR for one document never merges information from another document
+- [x] **DOC-03**: System extracts concept mentions, glossary terms, entities, and references from a parsed document via an LLM-backed pass returning validated structured output
 
 ### LLM Adapter & Determinism
 
-- [ ] **LLM-01**: LLM-backed passes depend only on LLMPort (the domain-owned port), never directly on a specific LLM SDK or library — the concrete provider integration (e.g. a PydanticAI-based adapter) is an interchangeable implementation detail
-- [ ] **LLM-02**: LLM responses are cached/recorded keyed on (document checksum, prompt version, schema version, pinned model id) so reruns against unchanged inputs reproduce identical output without re-calling the LLM
-- [ ] **LLM-03**: LLM-backed passes are unit-tested against recorded responses (golden fixtures), never against a live API call in CI
+- [x] **LLM-01**: LLM-backed passes depend only on LLMPort (the domain-owned port), never directly on a specific LLM SDK or library — the concrete provider integration (e.g. a PydanticAI-based adapter) is an interchangeable implementation detail
+- [x] **LLM-02**: LLM responses are cached/recorded keyed on (document checksum, prompt version, schema version, pinned model id) so reruns against unchanged inputs reproduce identical output without re-calling the LLM
+- [x] **LLM-03**: LLM-backed passes are unit-tested against recorded responses (golden fixtures), never against a live API call in CI
 
 ### Extensibility
 
