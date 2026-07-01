@@ -81,5 +81,15 @@ class DocumentCompiler:
             else:
                 ir = pass_fn(ir, self._ctx)
 
-        self._ctx.repository.save(ir.id, ir.model_dump())
+        if not ir.id:
+            raise RuntimeError(
+                "DocumentCompiler: pipeline completed but Document.id is empty. "
+                "Ensure metadata_pass is registered and ran successfully."
+            )
+        try:
+            self._ctx.repository.save(ir.id, ir.model_dump())
+        except Exception as exc:
+            raise RuntimeError(
+                f"DocumentCompiler: failed to persist document {ir.id!r}: {exc}"
+            ) from exc
         return ir
