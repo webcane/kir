@@ -38,5 +38,4 @@ def register_pass(name: str, depends_on: tuple[str, ...] = ()):
 
 
 # Force-import all pass modules to ensure decorator registration fires.
-# extract_concepts will be added in Plan 04.
-from . import parse, section, metadata  # noqa: E402, F401
+from . import parse, section, metadata, extract_concepts  # noqa: E402, F401
