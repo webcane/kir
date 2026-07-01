@@ -260,11 +260,14 @@ async def test_two_documents_produce_two_distinct_repository_entries(
     doc_a_path.write_text(doc_a_text, encoding="utf-8")
     doc_b_path.write_text(doc_b_text, encoding="utf-8")
 
-    repo_a = InMemoryFakeRepository()
+    # Both compilers share a single repository so id collisions would be
+    # visible as a missing or overwritten entry.
+    repo = InMemoryFakeRepository()
+
     adapter_a = FakeLLMAdapter(output=output_a)
     ctx_a = CompilerContext(
         llm=adapter_a,
-        repository=repo_a,
+        repository=repo,
         parser=MarkdownItAdapter(),
         compiler_version=compiler_version,
         schema_version=schema_version,
@@ -274,11 +277,10 @@ async def test_two_documents_produce_two_distinct_repository_entries(
     )
     compiler_a = DocumentCompiler(document_registry, ctx_a)
 
-    repo_b = InMemoryFakeRepository()
     adapter_b = FakeLLMAdapter(output=output_b)
     ctx_b = CompilerContext(
         llm=adapter_b,
-        repository=repo_b,
+        repository=repo,
         parser=MarkdownItAdapter(),
         compiler_version=compiler_version,
         schema_version=schema_version,
@@ -291,13 +293,10 @@ async def test_two_documents_produce_two_distinct_repository_entries(
     await compiler_a.compile(doc_a_path)
     await compiler_b.compile(doc_b_path)
 
-    assert len(repo_a._store) == 1
-    assert len(repo_b._store) == 1
-
-    key_a = list(repo_a._store.keys())[0]
-    key_b = list(repo_b._store.keys())[0]
+    assert len(repo._store) == 2, "Expected 2 distinct entries; id collision may have occurred"
+    key_a, key_b = list(repo._store.keys())
     assert key_a != key_b
 
-    title_a = list(repo_a._store.values())[0]["title"]
-    title_b = list(repo_b._store.values())[0]["title"]
+    title_a = repo._store[key_a]["title"]
+    title_b = repo._store[key_b]["title"]
     assert title_a != title_b
