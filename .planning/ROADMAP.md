@@ -22,7 +22,7 @@ M1 is implemented bottom-up. Compiler infrastructure is completed before any con
 ## Phases
 
 - [x] **Phase 1: Compiler Foundation** - Domain model, ports, CompilerContext, and pass-registry mechanics exist and are proven in isolation with fake passes, with zero LLM/filesystem/YAML imports in domain code (completed 2026-06-30)
-- [ ] **Phase 2: Document Compiler** - Markdown sources compile into Document IR end-to-end, through deterministic passes and one LLM-backed extraction pass, with a fake adapter proving LLMPort is swappable
+- [x] **Phase 2: Document Compiler** - Markdown sources compile into Document IR end-to-end, through deterministic passes and one LLM-backed extraction pass, with a fake adapter proving LLMPort is swappable (completed 2026-07-01)
 
 ## Phase Details
 
@@ -64,7 +64,7 @@ Plans:
   4. Re-running the extraction pass against an unchanged document (same checksum, prompt version, schema version, pinned model id) reproduces the identical cached output without re-calling the LLM
   5. The extraction pass's unit tests run entirely against recorded/mocked LLM responses (golden fixtures), with zero live API calls made during the test suite
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 Plans:
 **Wave 1**
 
@@ -84,4 +84,4 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Compiler Foundation | 4/4 | Complete    | 2026-06-30 |
-| 2. Document Compiler | 4/5 | In Progress|  |
+| 2. Document Compiler | 5/5 | Complete   | 2026-07-01 |
